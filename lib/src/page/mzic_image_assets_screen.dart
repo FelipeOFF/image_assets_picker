@@ -65,7 +65,9 @@ class MzicImageAssetsScreen extends StatefulWidget {
     this.filterOptions,
     this.sortPathsByModifiedDate = false,
     this.initializeDelayDuration = _kInitializeDelayDuration,
-    this.onPermissionDenied, this.textDelegate, this.loadingWidget,
+    this.onPermissionDenied,
+    this.textDelegate,
+    this.loadingWidget,
   });
 
   @override
@@ -75,11 +77,7 @@ class MzicImageAssetsScreen extends StatefulWidget {
 class _MzicImageAssetsScreenState extends State<MzicImageAssetsScreen> {
   String get _title => widget.title ?? "Select images";
 
-  Color get _appBarBackgroundColor =>
-      widget.appBarBackgroundColor ?? Theme
-          .of(context)
-          .colorScheme
-          .inversePrimary;
+  Color get _appBarBackgroundColor => widget.appBarBackgroundColor ?? Theme.of(context).colorScheme.inversePrimary;
 
   String get _leadingText => widget.leadingText ?? "Cancel";
 
@@ -88,28 +86,28 @@ class _MzicImageAssetsScreenState extends State<MzicImageAssetsScreen> {
 
   TextStyle get _leadingTextStyle =>
       widget.leadingTextStyle ??
-          const TextStyle(
-            color: Colors.white,
-          );
+      const TextStyle(
+        color: Colors.white,
+      );
 
   ButtonStyle get _leadingButtonStyle =>
       widget.leadingButtonStyle ??
-          ButtonStyle(
-            overlayColor: MaterialStateProperty.all(
-              Colors.transparent,
-            ),
-          );
+      ButtonStyle(
+        overlayColor: MaterialStateProperty.all(
+          Colors.transparent,
+        ),
+      );
 
   Widget get _leading =>
       widget.leading ??
-          TextButton(
-            onPressed: _onLeadingPressed,
-            style: _leadingButtonStyle,
-            child: Text(
-              _leadingText,
-              style: _leadingTextStyle,
-            ),
-          );
+      TextButton(
+        onPressed: _onLeadingPressed,
+        style: _leadingButtonStyle,
+        child: Text(
+          _leadingText,
+          style: _leadingTextStyle,
+        ),
+      );
 
   String get _actionText => widget.actionText ?? "Done";
 
@@ -118,28 +116,28 @@ class _MzicImageAssetsScreenState extends State<MzicImageAssetsScreen> {
 
   TextStyle get _actionTextStyle =>
       widget.actionTextStyle ??
-          const TextStyle(
-            color: Colors.white,
-          );
+      const TextStyle(
+        color: Colors.white,
+      );
 
   ButtonStyle get _actionButtonStyle =>
       widget.actionButtonStyle ??
-          ButtonStyle(
-            overlayColor: MaterialStateProperty.all(
-              Colors.transparent,
-            ),
-          );
+      ButtonStyle(
+        overlayColor: MaterialStateProperty.all(
+          Colors.transparent,
+        ),
+      );
 
   Widget get _action =>
       widget.action ??
-          TextButton(
-            onPressed: _onActionPressed,
-            style: _actionButtonStyle,
-            child: Text(
-              _actionText,
-              style: _actionTextStyle,
-            ),
-          );
+      TextButton(
+        onPressed: _onActionPressed,
+        style: _actionButtonStyle,
+        child: Text(
+          _actionText,
+          style: _actionTextStyle,
+        ),
+      );
 
   PreferredSizeWidget get _appBar {
     return widget.appBar ??
@@ -189,35 +187,30 @@ class _MzicImageAssetsScreenState extends State<MzicImageAssetsScreen> {
   Widget get loadingWidget => widget.loadingWidget ?? const CircularProgressIndicator();
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: _checkPermission(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data == PermissionState.denied) {
-            _openErrorPermission(context, textDelegate, onPermissionDenied);
-            return const SizedBox.shrink();
-          } else if (!snapshot.hasData) {
-            return loadingWidget;
-          }
-          return ChangeNotifierProvider.value(
-            value: provider,
-            child: Scaffold(
-              appBar: _appBar,
-              body: Column(
-                children: [
-                  MzicCropViewer(
-                    loadingWidget: loadingWidget,
-                  ),
-                ],
-              ),
-            ),
-          );
+      future: _checkPermission(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData && snapshot.data == PermissionState.denied) {
+          _openErrorPermission(context, textDelegate, onPermissionDenied);
+          return const SizedBox.shrink();
+        } else if (!snapshot.hasData) {
+          return loadingWidget;
         }
+        return ChangeNotifierProvider.value(
+          value: provider,
+          child: Scaffold(
+            appBar: _appBar,
+            body: Column(
+              children: [
+                MzicCropViewer(
+                  loadingWidget: loadingWidget,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -235,9 +228,11 @@ class _MzicImageAssetsScreenState extends State<MzicImageAssetsScreen> {
     return assetPickerTextDelegateFromLocale(locale);
   }
 
-  void _openErrorPermission(BuildContext context,
-      AssetPickerTextDelegate textDelegate,
-      Function(BuildContext, String)? customHandler,) {
+  void _openErrorPermission(
+    BuildContext context,
+    AssetPickerTextDelegate textDelegate,
+    Function(BuildContext, String)? customHandler,
+  ) {
     final defaultDescription = '${textDelegate.unableToAccessAll}\n${textDelegate.goToSystemSettings}';
 
     if (customHandler != null) {
@@ -249,4 +244,9 @@ class _MzicImageAssetsScreenState extends State<MzicImageAssetsScreen> {
     }
   }
 
+  @override
+  void dispose() {
+    provider.dispose();
+    super.dispose();
+  }
 }
