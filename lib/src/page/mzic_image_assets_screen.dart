@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mzic_image_assets_picker/src/component/mzic_crop_viewer.dart';
 
 class MzicImageAssetsScreen extends StatefulWidget {
   // App bar struct
@@ -130,6 +131,11 @@ class _MzicImageAssetsScreenState extends State<MzicImageAssetsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _appBar,
+      body: const Column(
+        children: [
+          MzicCropViewer(),
+        ],
+      ),
     );
   }
 }
