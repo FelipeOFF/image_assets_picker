@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:insta_assets_crop/insta_assets_crop.dart';
 import 'package:mzic_image_assets_picker/src/model/mzic_assets_crop_data.dart';
+import 'package:mzic_image_assets_picker/src/util/constants.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 abstract class BaseMzicImageAssetsController {
@@ -22,6 +23,7 @@ abstract class BaseMzicImageAssetsController {
     isDisposed = true;
     _dispose();
   }
+
   void _dispose() {}
 }
 
@@ -32,13 +34,28 @@ class MzicImageAssetsCropViewControllerGeneric extends BaseMzicImageAssetsContro
 
 mixin MzicImageAssetsCropViewController on BaseMzicImageAssetsController {
   final ValueNotifier<AssetEntity?> previewAssetVN = ValueNotifier<AssetEntity?>(null);
+  final ValueNotifier<bool> isLoadingErrorVM = ValueNotifier<bool>(false);
   final ValueNotifier<List<MzicAssetsCropData>> listOfAssetsCropVM = ValueNotifier<List<MzicAssetsCropData>>([]);
+  final ValueNotifier<List<double>> cropRatiosVM = ValueNotifier<List<double>>(kCropRatios);
+  final ValueNotifier<int> cropRatioIndexVM = ValueNotifier<int>(0);
 
   AssetEntity? get previewAsset => previewAssetVN.value;
   set previewAsset(AssetEntity? value) => previewAssetVN.value = value;
 
   List<MzicAssetsCropData> get listOfAssetsCrop => listOfAssetsCropVM.value;
   set listOfAssetsCrop(List<MzicAssetsCropData> value) => listOfAssetsCropVM.value = value;
+
+  bool get isLoadingError => isLoadingErrorVM.value;
+  set isLoadingError(bool value) => isLoadingErrorVM.value = value;
+
+  List<double> get cropRatios => cropRatiosVM.value;
+  set cropRatios(List<double> value) => cropRatiosVM.value = value;
+
+  int get cropRatioIndex => cropRatioIndexVM.value;
+  set cropRatioIndex(int value) => cropRatioIndexVM.value = value;
+
+  double get aspectRatio => cropRatios[cropRatioIndex];
+  set aspectRatio(double value) => cropRatioIndex = cropRatios.indexOf(value);
 
   MzicAssetsCropData? getAssetsCropByAssetEntity(AssetEntity asset) {
     if (listOfAssetsCrop.isEmpty) return null;
@@ -74,10 +91,21 @@ mixin MzicImageAssetsCropViewController on BaseMzicImageAssetsController {
     }).toList();
   }
 
+  void nextCropRatio() {
+    if (cropRatioIndex < cropRatios.length - 1) {
+      cropRatioIndex = cropRatioIndex + 1;
+    } else {
+      cropRatioIndex = 0;
+    }
+  }
+
   @override
   void _dispose() {
     previewAssetVN.dispose();
     listOfAssetsCropVM.dispose();
+    isLoadingErrorVM.dispose();
+    cropRatiosVM.dispose();
+    cropRatioIndexVM.dispose();
     super.dispose();
   }
 }

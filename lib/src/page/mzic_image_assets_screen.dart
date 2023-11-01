@@ -205,33 +205,20 @@ class _MzicImageAssetsScreenState extends State<MzicImageAssetsScreen> {
         }
         return ChangeNotifierProvider.value(
           value: provider,
-          child: Builder(builder: (context) {
-            _setupProvider();
-
-            return Scaffold(
-              appBar: _appBar,
-              body: Column(
-                children: [
-                  MzicCropViewer(
-                    loadingWidget: loadingWidget,
-                    controller: controller,
-                  ),
-                ],
-              ),
-            );
-          }),
+          child: Scaffold(
+            appBar: _appBar,
+            body: Column(
+              children: [
+                MzicCropViewer(
+                  loadingWidget: loadingWidget,
+                  controller: controller,
+                ),
+              ],
+            ),
+          ),
         );
       },
     );
-  }
-
-  void _setupProvider() {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final list = await provider.currentPath?.path.getAssetListRange(start: 0, end: 1);
-      if (list?.isNotEmpty ?? false) {
-        controller.previewAsset = list!.firstOrNull;
-      }
-    });
   }
 
   Future<PermissionState?> _checkPermission() async {
