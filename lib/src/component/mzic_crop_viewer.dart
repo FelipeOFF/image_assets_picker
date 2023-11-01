@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:collection/collection.dart';
 import 'package:insta_assets_crop/insta_assets_crop.dart';
 import 'package:mzic_image_assets_picker/src/controller/mzic_image_assets_controller.dart';
 import 'package:provider/provider.dart';
@@ -24,11 +25,13 @@ class MzicCropViewerState extends State<MzicCropViewer> {
   final _cropKey = GlobalKey<CropState>();
 
   MzicImageAssetsCropViewController get controller => widget.controller ?? MzicImageAssetsCropViewControllerGeneric();
+
   Widget get loadingWidget => Center(child: widget.loadingWidget ?? const CircularProgressIndicator());
 
   @override
   void initState() {
     super.initState();
+    controller.init();
     if (controller is MzicImageAssetsCropViewControllerGeneric) {
       controller.previewAsset = widget.assetEntity;
     }
@@ -67,7 +70,22 @@ class MzicCropViewerState extends State<MzicCropViewer> {
 
           _previousAsset = asset;
 
-          return Container(); // PROXIMA ETAPA
+          return Stack(
+            children: [
+              Positioned.fill(
+                child: Crop(
+                  key: _cropKey,
+                  alwaysShowGrid: true,
+                  aspectRatio: 1,
+                  backgroundColor: Colors.black,
+                  image: AssetEntityImageProvider(
+                    asset,
+                    isOriginal: true,
+                  ),
+                ),
+              ),
+            ],
+          );
         },
         selector: (BuildContext context, DefaultAssetPickerProvider defaultAssetPickerProvider) =>
             defaultAssetPickerProvider.selectedAssets,

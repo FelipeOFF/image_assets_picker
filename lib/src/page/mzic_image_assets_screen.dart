@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mzic_image_assets_picker/src/component/mzic_crop_viewer.dart';
+import 'package:mzic_image_assets_picker/src/controller/mzic_image_assets_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
@@ -40,6 +41,8 @@ class MzicImageAssetsScreen extends StatefulWidget {
   final AssetPickerTextDelegate? textDelegate;
   final Widget? loadingWidget;
 
+  final MzicImageAssetsController? controller;
+
   const MzicImageAssetsScreen({
     super.key,
     this.appBar,
@@ -68,6 +71,7 @@ class MzicImageAssetsScreen extends StatefulWidget {
     this.onPermissionDenied,
     this.textDelegate,
     this.loadingWidget,
+    this.controller,
   });
 
   @override
@@ -186,6 +190,8 @@ class _MzicImageAssetsScreenState extends State<MzicImageAssetsScreen> {
 
   Widget get loadingWidget => widget.loadingWidget ?? const CircularProgressIndicator();
 
+  MzicImageAssetsController get controller => widget.controller ?? MzicImageAssetsController();
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -199,19 +205,33 @@ class _MzicImageAssetsScreenState extends State<MzicImageAssetsScreen> {
         }
         return ChangeNotifierProvider.value(
           value: provider,
-          child: Scaffold(
-            appBar: _appBar,
-            body: Column(
-              children: [
-                MzicCropViewer(
-                  loadingWidget: loadingWidget,
-                ),
-              ],
-            ),
-          ),
+          child: Builder(builder: (context) {
+            _setupProvider();
+
+            return Scaffold(
+              appBar: _appBar,
+              body: Column(
+                children: [
+                  MzicCropViewer(
+                    loadingWidget: loadingWidget,
+                    controller: controller,
+                  ),
+                ],
+              ),
+            );
+          }),
         );
       },
     );
+  }
+
+  void _setupProvider() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final list = await provider.currentPath?.path.getAssetListRange(start: 0, end: 1);
+      if (list?.isNotEmpty ?? false) {
+        controller.previewAsset = list!.firstOrNull;
+      }
+    });
   }
 
   Future<PermissionState?> _checkPermission() async {

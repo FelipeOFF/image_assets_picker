@@ -4,7 +4,25 @@ import 'package:mzic_image_assets_picker/src/model/mzic_assets_crop_data.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 abstract class BaseMzicImageAssetsController {
-  void dispose() {}
+  bool isInit = false;
+  bool isDisposed = false;
+
+  // Do not override this method
+  void init() {
+    if (isInit) return;
+    isInit = true;
+    _init();
+  }
+
+  void _init() {}
+
+  // Do not override this method
+  void dispose() {
+    if (isDisposed) return;
+    isDisposed = true;
+    _dispose();
+  }
+  void _dispose() {}
 }
 
 class MzicImageAssetsController extends BaseMzicImageAssetsController with MzicImageAssetsCropViewController {}
@@ -17,11 +35,9 @@ mixin MzicImageAssetsCropViewController on BaseMzicImageAssetsController {
   final ValueNotifier<List<MzicAssetsCropData>> listOfAssetsCropVM = ValueNotifier<List<MzicAssetsCropData>>([]);
 
   AssetEntity? get previewAsset => previewAssetVN.value;
-
   set previewAsset(AssetEntity? value) => previewAssetVN.value = value;
 
   List<MzicAssetsCropData> get listOfAssetsCrop => listOfAssetsCropVM.value;
-
   set listOfAssetsCrop(List<MzicAssetsCropData> value) => listOfAssetsCropVM.value = value;
 
   MzicAssetsCropData? getAssetsCropByAssetEntity(AssetEntity asset) {
@@ -59,7 +75,7 @@ mixin MzicImageAssetsCropViewController on BaseMzicImageAssetsController {
   }
 
   @override
-  void dispose() {
+  void _dispose() {
     previewAssetVN.dispose();
     listOfAssetsCropVM.dispose();
     super.dispose();
