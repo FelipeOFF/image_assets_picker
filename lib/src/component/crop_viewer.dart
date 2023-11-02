@@ -43,7 +43,7 @@ class MzicCropViewerState extends State<MzicCropViewer> {
 
   Widget get loadingWidget => Center(child: widget.loadingWidget ?? const CircularProgressIndicator());
 
-  Size get size => widget.size ?? Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height * 0.3);
+  Size get size => widget.size ?? Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height * 0.45);
 
   Color get backgroundColor => widget.backgroundColor ?? Theme.of(context).canvasColor;
 
