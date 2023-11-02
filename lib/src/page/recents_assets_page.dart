@@ -149,42 +149,54 @@ class _RecentsAssetsPageState extends State<RecentsAssetsPage> {
                       final String name = isPermissionLimited && pathEntity.isAll ? "Permission" : pathName;
                       final String? semanticsCount = wrapper.assetCount?.toString();
 
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              width: widget.thumbSize,
-                              height: widget.thumbSize,
-                              child: RepaintBoundary(
-                                child: AspectRatio(
-                                  aspectRatio: 1,
-                                  child: _getThumb(
-                                    data,
-                                    pathEntity,
+                      return Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          focusColor: Colors.transparent,
+                          splashColor: Colors.transparent,
+                          hoverColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          onTap: () {
+                            Navigator.of(context).pop(wrapper);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: widget.thumbSize,
+                                  height: widget.thumbSize,
+                                  child: RepaintBoundary(
+                                    child: AspectRatio(
+                                      aspectRatio: 1,
+                                      child: _getThumb(
+                                        data,
+                                        pathEntity,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 16,
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    name,
-                                    style: nameTextStyle,
+                                const SizedBox(
+                                  width: 16,
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        name,
+                                        style: nameTextStyle,
+                                      ),
+                                      Text(
+                                        semanticsCount.toString(),
+                                        style: countTextStyle,
+                                      ),
+                                    ],
                                   ),
-                                  Text(
-                                    semanticsCount.toString(),
-                                    style: countTextStyle,
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                       );
                     },

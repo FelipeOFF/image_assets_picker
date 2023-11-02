@@ -254,7 +254,7 @@ class _MzicImageAssetsPageState extends State<MzicImageAssetsPage> {
         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
       );
 
-  String get _buttonRecentsText => widget.buttonRecentsText ?? "Recents";
+  String _buttonRecentsText(String? name) => widget.buttonRecentsText ?? name ?? "Recents";
 
   Widget get _iconButtonRecents => widget.iconButtonRecents ?? const Icon(Icons.arrow_drop_down, size: 14);
 
@@ -264,7 +264,7 @@ class _MzicImageAssetsPageState extends State<MzicImageAssetsPage> {
         fontSize: 14,
       );
 
-  Widget get _buttonRecents =>
+  Widget _buttonRecents(BuildContext context) =>
       widget.buttonRecents ??
       ElevatedButton(
         style: _buttonRecentsStyle,
@@ -273,18 +273,23 @@ class _MzicImageAssetsPageState extends State<MzicImageAssetsPage> {
             const SizedBox(
               width: 8,
             ),
-            Text(
-              _buttonRecentsText,
-              style: _buttonRecentsTextStyle,
+            Selector<DefaultAssetPickerProvider, PathWrapper<AssetPathEntity>?>(
+              selector: (_, DefaultAssetPickerProvider p) => p.currentPath,
+              builder: (context, currentWrapper, _) {
+                return Text(
+                  _buttonRecentsText(currentWrapper?.path.name),
+                  style: _buttonRecentsTextStyle,
+                );
+              },
             ),
             _iconButtonRecents,
           ],
         ),
-        onPressed: () {
+        onPressed: () async {
           if (widget.onButtonRecentsPressed != null) {
             widget.onButtonRecentsPressed!();
           } else {
-            Navigator.of(context).push(
+            final result = await Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) {
                   return RecentsAssetsPage(
@@ -305,6 +310,12 @@ class _MzicImageAssetsPageState extends State<MzicImageAssetsPage> {
                 },
               ),
             );
+
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (result != null && result is PathWrapper<AssetPathEntity>) {
+                provider.switchPath(result);
+              }
+            });
           }
         },
       );
@@ -336,7 +347,7 @@ class _MzicImageAssetsPageState extends State<MzicImageAssetsPage> {
                           children: [
                             Padding(
                               padding: _paddingButtonRecents,
-                              child: _buttonRecents,
+                              child: _buttonRecents(context),
                             ),
                           ],
                         ),
