@@ -40,7 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text("Mzic Image Assets Picker demo"),
       ),
-      body: const MzicImageAssetsScreen(),
+      body: const MzicImageAssetsPage(),
     );
   }
 }

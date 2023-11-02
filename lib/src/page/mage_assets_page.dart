@@ -8,7 +8,7 @@ const _kInitializeDelayDuration = Duration(milliseconds: 250);
 
 typedef OnPermissionDenied = void Function(BuildContext context, String errorDescription);
 
-class MzicImageAssetsScreen extends StatefulWidget {
+class MzicImageAssetsPage extends StatefulWidget {
   // App bar struct
 
   final PreferredSizeWidget? appBar;
@@ -59,7 +59,7 @@ class MzicImageAssetsScreen extends StatefulWidget {
 
   final MzicImageAssetsController? controller;
 
-  const MzicImageAssetsScreen({
+  const MzicImageAssetsPage({
     super.key,
     this.appBar,
     this.title,
@@ -99,10 +99,10 @@ class MzicImageAssetsScreen extends StatefulWidget {
   });
 
   @override
-  State<MzicImageAssetsScreen> createState() => _MzicImageAssetsScreenState();
+  State<MzicImageAssetsPage> createState() => _MzicImageAssetsPageState();
 }
 
-class _MzicImageAssetsScreenState extends State<MzicImageAssetsScreen> {
+class _MzicImageAssetsPageState extends State<MzicImageAssetsPage> {
   String get _title => widget.title ?? "Select images";
 
   Color get _appBarBackgroundColor => widget.appBarBackgroundColor ?? Theme.of(context).colorScheme.inversePrimary;
