@@ -33,7 +33,9 @@ class RecentsAssetsPage extends StatefulWidget {
     required this.provider,
     this.pathNameBuilder,
     this.permission = PermissionState.notDetermined,
-    this.thumbSize = 80, this.nameTextStyle, this.countTextStyle,
+    this.thumbSize = 80,
+    this.nameTextStyle,
+    this.countTextStyle,
   });
 
   @override
@@ -98,18 +100,22 @@ class _RecentsAssetsPageState extends State<RecentsAssetsPage> {
 
   bool get isPermissionLimited => widget.permission == PermissionState.limited;
 
-  TextStyle get nameTextStyle => widget.nameTextStyle ?? const TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.w400,
-    height: 1.5,
-  );
+  TextStyle get nameTextStyle =>
+      widget.nameTextStyle ??
+      const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+        height: 1.5,
+      );
 
-  TextStyle get countTextStyle => widget.countTextStyle ?? TextStyle(
-    fontSize: 16,
-    color: Theme.of(context).colorScheme.secondary,
-    fontWeight: FontWeight.w600,
-    height: 1.5,
-  );
+  TextStyle get countTextStyle =>
+      widget.countTextStyle ??
+      TextStyle(
+        fontSize: 16,
+        color: Theme.of(context).colorScheme.secondary,
+        fontWeight: FontWeight.w600,
+        height: 1.5,
+      );
 
   @override
   Widget build(BuildContext context) {

@@ -11,7 +11,6 @@ typedef OnPermissionDenied = void Function(BuildContext context, String errorDes
 
 class MzicImageAssetsPage extends StatefulWidget {
   // App bar struct
-
   final PreferredSizeWidget? appBar;
   final String? title;
   final Color? appBarBackgroundColor;
@@ -46,7 +45,6 @@ class MzicImageAssetsPage extends StatefulWidget {
   // End crop viewer struct
 
   // Button recents struct
-
   final Widget? buttonRecents;
   final EdgeInsets? paddingButtonRecents;
   final ButtonStyle? buttonRecentsStyle;
@@ -67,6 +65,10 @@ class MzicImageAssetsPage extends StatefulWidget {
   final ButtonStyle? recentLeadingButtonStyle;
   final TextStyle? recentLeadingTextStyle;
   final String? recentTitle;
+  final double recentThumbSize;
+  final PathNameBuilder<AssetPathEntity>? recentPathNameBuilder;
+  final TextStyle? recentNameTextStyle;
+  final TextStyle? recentCountTextStyle;
 
   // End recents assets page struct
 
@@ -117,6 +119,10 @@ class MzicImageAssetsPage extends StatefulWidget {
     this.recentLeadingButtonStyle,
     this.recentLeadingTextStyle,
     this.recentTitle,
+    this.recentThumbSize = 80,
+    this.recentPathNameBuilder,
+    this.recentNameTextStyle,
+    this.recentCountTextStyle,
   });
 
   @override
@@ -291,6 +297,10 @@ class _MzicImageAssetsPageState extends State<MzicImageAssetsPage> {
                     leadingTextStyle: widget.recentLeadingTextStyle,
                     title: widget.recentTitle,
                     provider: provider,
+                    thumbSize: widget.recentThumbSize,
+                    pathNameBuilder: widget.recentPathNameBuilder,
+                    nameTextStyle: widget.recentNameTextStyle,
+                    countTextStyle: widget.recentCountTextStyle,
                   );
                 },
               ),

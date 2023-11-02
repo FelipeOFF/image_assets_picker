@@ -13,4 +13,4 @@ export 'package:image_assets_picker/src/component/crop_viewer.dart';
 
 // Page
 export 'package:image_assets_picker/src/page/recents_assets_page.dart';
-export 'package:image_assets_picker/src/page/mage_assets_page.dart';
+export 'package:image_assets_picker/src/page/image_assets_page.dart';
