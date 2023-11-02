@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_assets_picker/src/component/crop_viewer.dart';
 import 'package:image_assets_picker/src/controller/image_assets_controller.dart';
+import 'package:image_assets_picker/src/page/recents_assets_page.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
@@ -57,6 +58,18 @@ class MzicImageAssetsPage extends StatefulWidget {
 
   // End button recents struct
 
+  // Start recents assets page struct
+  final PreferredSizeWidget? recentAppBar;
+  final Color? recentAppBarBackgroundColor;
+  final Widget? recentLeading;
+  final String? recentLeadingText;
+  final VoidCallback? recentOnLeadingPressed;
+  final ButtonStyle? recentLeadingButtonStyle;
+  final TextStyle? recentLeadingTextStyle;
+  final String? recentTitle;
+
+  // End recents assets page struct
+
   final MzicImageAssetsController? controller;
 
   const MzicImageAssetsPage({
@@ -96,6 +109,14 @@ class MzicImageAssetsPage extends StatefulWidget {
     this.iconButtonRecents,
     this.onButtonRecentsPressed,
     this.isToShowButtonRecents = true,
+    this.recentAppBar,
+    this.recentAppBarBackgroundColor,
+    this.recentLeading,
+    this.recentLeadingText,
+    this.recentOnLeadingPressed,
+    this.recentLeadingButtonStyle,
+    this.recentLeadingTextStyle,
+    this.recentTitle,
   });
 
   @override
@@ -257,7 +278,23 @@ class _MzicImageAssetsPageState extends State<MzicImageAssetsPage> {
           if (widget.onButtonRecentsPressed != null) {
             widget.onButtonRecentsPressed!();
           } else {
-            // TODO call another screen
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) {
+                  return RecentsAssetsPage(
+                    appBar: widget.recentAppBar,
+                    appBarBackgroundColor: widget.recentAppBarBackgroundColor,
+                    leading: widget.recentLeading,
+                    leadingText: widget.recentLeadingText,
+                    onLeadingPressed: widget.recentOnLeadingPressed,
+                    leadingButtonStyle: widget.recentLeadingButtonStyle,
+                    leadingTextStyle: widget.recentLeadingTextStyle,
+                    title: widget.recentTitle,
+                    provider: provider,
+                  );
+                },
+              ),
+            );
           }
         },
       );
