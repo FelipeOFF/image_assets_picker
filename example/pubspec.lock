@@ -155,10 +155,11 @@ packages:
   insta_assets_crop:
     dependency: transitive
     description:
-      name: insta_assets_crop
-      sha256: "800ba2e5ececd170a70da573e3d94460c9abf50621335c859e8155c6b592b460"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: ab81b442545071f4064b53966ecddfe93d86ed1e
+      resolved-ref: ab81b442545071f4064b53966ecddfe93d86ed1e
+      url: "https://github.com/FelipeOFF/image_crop.git"
+    source: git
     version: "0.0.2"
   js:
     dependency: transitive
@@ -408,10 +409,10 @@ packages:
     dependency: transitive
     description:
       name: video_player_web
-      sha256: "2dd24f7ba46bfb5d070e9c795001db95e0ca5f2a3d025e98f287c10c9f0fd62f"
+      sha256: ab7a462b07d9ca80bed579e30fb3bce372468f1b78642e0911b10600f2c5cb5b
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.1"
+    version: "2.1.2"
   web:
     dependency: transitive
     description:

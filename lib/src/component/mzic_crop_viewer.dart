@@ -101,31 +101,40 @@ class MzicCropViewerState extends State<MzicCropViewer> {
                   children: [
                     Positioned.fill(
                       child: Crop(
+                        alwaysShowGrid: true,
                         key: _cropKey,
                         image: AssetEntityImageProvider(asset, isOriginal: true),
                         placeholderWidget: ValueListenableBuilder<bool>(
                           valueListenable: controller.isLoadingErrorVM,
-                          builder: (context, isLoadingError, child) => Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              ExtendedImage(
-                                // to match crop alignment
-                                alignment: controller.aspectRatio == 1.0 ? Alignment.center : Alignment.bottomCenter,
-                                height: size.height,
-                                width: size.height * controller.aspectRatio,
-                                image: AssetEntityImageProvider(asset, isOriginal: false),
-                                enableMemoryCache: false,
-                                fit: BoxFit.cover,
-                              ),
-                              // show backdrop when image is loading or if an error occured
-                              isLoadingError
-                                  ? Text(widget.loadFailedText)
-                                  : (widget.loaderWidget ?? const SizedBox.shrink()),
-                            ],
-                          ),
+                          builder: (context, isLoadingError, child) {
+                            return Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                ExtendedImage(
+                                  // to match crop alignment
+                                  alignment: controller.aspectRatio == 1.0 ? Alignment.center : Alignment.bottomCenter,
+                                  height: size.height,
+                                  width: size.height * controller.aspectRatio,
+                                  image: AssetEntityImageProvider(asset, isOriginal: false),
+                                  enableMemoryCache: false,
+                                  fit: BoxFit.cover,
+                                ),
+                                // show backdrop when image is loading or if an error occured
+                                Positioned.fill(
+                                  child: DecoratedBox(
+                                    decoration: BoxDecoration(color: Theme.of(context).cardColor.withOpacity(0.4)),
+                                  ),
+                                ),
+                                isLoadingError
+                                    ? widget.loaderWidget ?? Text(widget.loadFailedText)
+                                    : const SizedBox.shrink(),
+                              ],
+                            );
+                          },
                         ),
                         // if the image could not be loaded (i.e unsupported format like RAW)
                         // unselect it and clear cache, also show the error widget
+                        isToDrawRectGrid: false,
                         onImageError: (exception, stackTrace) {
                           widget.unSelectAsset?.call(asset);
                           AssetEntityImageProvider(asset).evict();
