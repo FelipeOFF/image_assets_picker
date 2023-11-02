@@ -156,8 +156,8 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: ab81b442545071f4064b53966ecddfe93d86ed1e
-      resolved-ref: ab81b442545071f4064b53966ecddfe93d86ed1e
+      ref: master
+      resolved-ref: a3b1ede57b3661fd938e6deee89b40515418f6c4
       url: "https://github.com/FelipeOFF/image_crop.git"
     source: git
     version: "0.0.2"

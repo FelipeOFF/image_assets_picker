@@ -103,6 +103,7 @@ class MzicCropViewerState extends State<MzicCropViewer> {
                       child: Crop(
                         alwaysShowGrid: true,
                         key: _cropKey,
+                        isToDrawGrid: false,
                         image: AssetEntityImageProvider(asset, isOriginal: true),
                         placeholderWidget: ValueListenableBuilder<bool>(
                           valueListenable: controller.isLoadingErrorVM,
