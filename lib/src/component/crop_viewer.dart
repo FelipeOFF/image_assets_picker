@@ -16,6 +16,7 @@ class MzicCropViewer extends StatefulWidget {
   final Widget? loaderWidget;
   final String loadFailedText;
   final ValueChanged<AssetEntity>? unSelectAsset;
+  final Color? backgroundColor;
 
   const MzicCropViewer({
     super.key,
@@ -28,6 +29,7 @@ class MzicCropViewer extends StatefulWidget {
     this.loadFailedText = "Load failed",
     this.loaderWidget,
     this.unSelectAsset,
+    this.backgroundColor,
   });
 
   @override
@@ -42,6 +44,8 @@ class MzicCropViewerState extends State<MzicCropViewer> {
   Widget get loadingWidget => Center(child: widget.loadingWidget ?? const CircularProgressIndicator());
 
   Size get size => widget.size ?? Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height * 0.3);
+
+  Color get backgroundColor => widget.backgroundColor ?? Theme.of(context).canvasColor;
 
   @override
   void initState() {
@@ -104,6 +108,7 @@ class MzicCropViewerState extends State<MzicCropViewer> {
                         alwaysShowGrid: true,
                         key: _cropKey,
                         isToDrawGrid: false,
+                        isToApplyBackgroundOpacity: false,
                         image: AssetEntityImageProvider(asset, isOriginal: true),
                         placeholderWidget: ValueListenableBuilder<bool>(
                           valueListenable: controller.isLoadingErrorVM,
@@ -146,7 +151,7 @@ class MzicCropViewerState extends State<MzicCropViewer> {
                         maximumScale: 10,
                         aspectRatio: controller.aspectRatio,
                         disableResize: true,
-                        backgroundColor: Theme.of(context).canvasColor,
+                        backgroundColor: backgroundColor.withOpacity(0.5),
                         initialParam: savedCropParam,
                       ),
                     ),

@@ -7,4 +7,9 @@ library image_assets_picker;
 //     DefaultAssetPickerProvider,
 //     SpecialItemPosition,
 //     PhotoManager;
+
+// Components
+export 'package:image_assets_picker/src/component/crop_viewer.dart';
+
+// Page
 export 'package:image_assets_picker/src/page/mage_assets_screen.dart';
