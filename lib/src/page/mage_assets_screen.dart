@@ -29,6 +29,7 @@ class MzicImageAssetsScreen extends StatefulWidget {
 
   // End app bar struct
 
+  // Crop viewer struct
   final List<AssetEntity>? selectedAssets;
   final int maxAssets;
   final int pageSize;
@@ -40,6 +41,21 @@ class MzicImageAssetsScreen extends StatefulWidget {
   final OnPermissionDenied? onPermissionDenied;
   final AssetPickerTextDelegate? textDelegate;
   final Widget? loadingWidget;
+
+  // End crop viewer struct
+
+  // Button recents struct
+
+  final Widget? buttonRecents;
+  final EdgeInsets? paddingButtonRecents;
+  final ButtonStyle? buttonRecentsStyle;
+  final TextStyle? buttonRecentsTextStyle;
+  final String? buttonRecentsText;
+  final Widget? iconButtonRecents;
+  final VoidCallback? onButtonRecentsPressed;
+  final bool isToShowButtonRecents;
+
+  // End button recents struct
 
   final MzicImageAssetsController? controller;
 
@@ -72,6 +88,14 @@ class MzicImageAssetsScreen extends StatefulWidget {
     this.textDelegate,
     this.loadingWidget,
     this.controller,
+    this.buttonRecents,
+    this.paddingButtonRecents,
+    this.buttonRecentsStyle,
+    this.buttonRecentsTextStyle,
+    this.buttonRecentsText,
+    this.iconButtonRecents,
+    this.onButtonRecentsPressed,
+    this.isToShowButtonRecents = true,
   });
 
   @override
@@ -192,6 +216,52 @@ class _MzicImageAssetsScreenState extends State<MzicImageAssetsScreen> {
 
   MzicImageAssetsController get controller => widget.controller ?? MzicImageAssetsController();
 
+  EdgeInsets get _paddingButtonRecents => widget.paddingButtonRecents ?? const EdgeInsets.all(16.0);
+
+  ButtonStyle get _buttonRecentsStyle =>
+      widget.buttonRecentsStyle ??
+      ElevatedButton.styleFrom(
+        elevation: 0,
+        backgroundColor: Colors.grey.withOpacity(0.08),
+        minimumSize: const Size(78, 34),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+      );
+
+  String get _buttonRecentsText => widget.buttonRecentsText ?? "Recents";
+
+  Widget get _iconButtonRecents => widget.iconButtonRecents ?? const Icon(Icons.arrow_drop_down, size: 14);
+
+  TextStyle get _buttonRecentsTextStyle =>
+      widget.buttonRecentsTextStyle ??
+      const TextStyle(
+        fontSize: 14,
+      );
+
+  Widget get _buttonRecents =>
+      widget.buttonRecents ??
+      ElevatedButton(
+        style: _buttonRecentsStyle,
+        child: Row(
+          children: [
+            const SizedBox(
+              width: 8,
+            ),
+            Text(
+              _buttonRecentsText,
+              style: _buttonRecentsTextStyle,
+            ),
+            _iconButtonRecents,
+          ],
+        ),
+        onPressed: () {
+          if (widget.onButtonRecentsPressed != null) {
+            widget.onButtonRecentsPressed!();
+          } else {
+            // TODO call another screen
+          }
+        },
+      );
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -213,6 +283,18 @@ class _MzicImageAssetsScreenState extends State<MzicImageAssetsScreen> {
                   loadingWidget: loadingWidget,
                   controller: controller,
                 ),
+                widget.isToShowButtonRecents
+                    ? Expanded(
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: _paddingButtonRecents,
+                              child: _buttonRecents,
+                            ),
+                          ],
+                        ),
+                      )
+                    : const SizedBox.shrink(),
               ],
             ),
           ),
