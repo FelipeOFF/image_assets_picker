@@ -13,7 +13,7 @@ dependencies:
   insta_assets_crop:
     git:
       url: https://github.com/FelipeOFF/image_crop.git
-      ref: ab81b442545071f4064b53966ecddfe93d86ed1e
+      ref: master
   wechat_assets_picker: ^8.7.1
   extended_image: ^8.1.1
   provider: ^6.0.5
