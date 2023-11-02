@@ -1,6 +1,6 @@
 # example
 
-This is a example aplication for mzic_image_assets_picker
+This is a example aplication for image_assets_picker
 
 ## Getting Started
 

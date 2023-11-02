@@ -1,4 +1,4 @@
-library mzic_image_assets_picker;
+library image_assets_picker;
 
 // export 'package:wechat_assets_picker/wechat_assets_picker.dart'
 //     show
@@ -7,4 +7,4 @@ library mzic_image_assets_picker;
 //     DefaultAssetPickerProvider,
 //     SpecialItemPosition,
 //     PhotoManager;
-export 'package:mzic_image_assets_picker/src/page/mzic_image_assets_screen.dart';
+export 'package:image_assets_picker/src/page/mage_assets_screen.dart';

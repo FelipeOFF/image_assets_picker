@@ -1,5 +1,5 @@
 name: example
-description: This is a example aplication for mzic_image_assets_picker
+description: This is a example aplication for image_assets_picker
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -33,7 +33,7 @@ dependencies:
 
   cupertino_icons: ^1.0.2
 
-  mzic_image_assets_picker:
+  image_assets_picker:
     path: ../
 
 dev_dependencies:

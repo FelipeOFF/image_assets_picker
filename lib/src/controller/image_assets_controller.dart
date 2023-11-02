@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:insta_assets_crop/insta_assets_crop.dart';
-import 'package:mzic_image_assets_picker/src/model/mzic_assets_crop_data.dart';
-import 'package:mzic_image_assets_picker/src/util/constants.dart';
+import 'package:image_assets_picker/src/model/assets_crop_data.dart';
+import 'package:image_assets_picker/src/util/constants.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 abstract class BaseMzicImageAssetsController {

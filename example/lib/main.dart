@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mzic_image_assets_picker/mzic_image_assets_picker.dart';
+import 'package:image_assets_picker/image_assets_picker.dart';
 
 void main() {
   runApp(const MyApp());
