@@ -19,6 +19,7 @@ class RecentsAssetsPage extends StatefulWidget {
   final PathNameBuilder<AssetPathEntity>? pathNameBuilder;
   final TextStyle? nameTextStyle;
   final TextStyle? countTextStyle;
+  final Color? screenBackgroundColor;
 
   const RecentsAssetsPage({
     super.key,
@@ -35,7 +36,7 @@ class RecentsAssetsPage extends StatefulWidget {
     this.permission = PermissionState.notDetermined,
     this.thumbSize = 80,
     this.nameTextStyle,
-    this.countTextStyle,
+    this.countTextStyle, this.screenBackgroundColor,
   });
 
   @override
@@ -122,6 +123,7 @@ class _RecentsAssetsPageState extends State<RecentsAssetsPage> {
     return ChangeNotifierProvider.value(
       value: widget.provider,
       child: Scaffold(
+        backgroundColor: widget.screenBackgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
         appBar: _appBar,
         body: Selector<DefaultAssetPickerProvider, PathWrapper<AssetPathEntity>?>(
             selector: (_, DefaultAssetPickerProvider p) => p.currentPath,

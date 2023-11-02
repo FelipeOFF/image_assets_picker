@@ -10,6 +10,8 @@ const _kInitializeDelayDuration = Duration(milliseconds: 250);
 typedef OnPermissionDenied = void Function(BuildContext context, String errorDescription);
 
 class MzicImageAssetsPage extends StatefulWidget {
+  final Color? screenBackgroundColor;
+
   // App bar struct
   final PreferredSizeWidget? appBar;
   final String? title;
@@ -69,6 +71,7 @@ class MzicImageAssetsPage extends StatefulWidget {
   final PathNameBuilder<AssetPathEntity>? recentPathNameBuilder;
   final TextStyle? recentNameTextStyle;
   final TextStyle? recentCountTextStyle;
+  final Color? recentScreenBackgroundColor;
 
   // End recents assets page struct
 
@@ -123,6 +126,8 @@ class MzicImageAssetsPage extends StatefulWidget {
     this.recentPathNameBuilder,
     this.recentNameTextStyle,
     this.recentCountTextStyle,
+    this.screenBackgroundColor,
+    this.recentScreenBackgroundColor,
   });
 
   @override
@@ -306,6 +311,7 @@ class _MzicImageAssetsPageState extends State<MzicImageAssetsPage> {
                     pathNameBuilder: widget.recentPathNameBuilder,
                     nameTextStyle: widget.recentNameTextStyle,
                     countTextStyle: widget.recentCountTextStyle,
+                    screenBackgroundColor: widget.recentScreenBackgroundColor,
                   );
                 },
               ),
@@ -334,6 +340,7 @@ class _MzicImageAssetsPageState extends State<MzicImageAssetsPage> {
         return ChangeNotifierProvider.value(
           value: provider,
           child: Scaffold(
+            backgroundColor: widget.screenBackgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
             appBar: _appBar,
             body: Column(
               children: [
