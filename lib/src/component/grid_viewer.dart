@@ -64,64 +64,7 @@ class GridViewer extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Positioned.fill(
-                        child: GestureDetector(
-                          onTap: () {
-                            if (maxAssets != 1 && selected.length == maxAssets && !isSelected) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text("You can only select $maxAssets images"),
-                                ),
-                              );
-                              return;
-                            }
-                            if (isSelected && selected.length > 1) {
-                              provider.unSelectAsset(asset);
-                            }
-                            if (isSelected && selected.length == 1) {
-                              provider.unSelectAsset(asset);
-                              controller.previewAsset = null;
-                            }
-                            if (maxAssets == 1) {
-                              for (final AssetEntity selectedAsset in selected) {
-                                provider.unSelectAsset(selectedAsset);
-                              }
-                              provider.selectAsset(asset);
-                              controller.previewAsset = asset;
-                            } else {
-                              provider.selectAsset(asset);
-                            }
-                          },
-                          child: Consumer<DefaultAssetPickerProvider>(
-                            builder: (_, provider, __) {
-                              final int index = provider.selectedAssets.indexOf(asset);
-                              return AnimatedContainer(
-                                duration: const Duration(milliseconds: 300),
-                                color: isSelected
-                                    ? Theme.of(context).colorScheme.primary.withOpacity(.45)
-                                    : Theme.of(context).colorScheme.background.withOpacity(.1),
-                                child: isSelected
-                                    ? Align(
-                                        alignment: AlignmentDirectional.topStart,
-                                        child: FittedBox(
-                                          alignment: AlignmentDirectional.topStart,
-                                          fit: BoxFit.cover,
-                                          child: Text(
-                                            '${index + 1}',
-                                            style: TextStyle(
-                                              color: Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(.75),
-                                              fontWeight: FontWeight.w600,
-                                              height: 1,
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                    : const SizedBox.shrink(),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
+                      _buildSelectWidget(selected, isSelected, context, provider, asset),
                     ],
                   );
                 },
@@ -131,5 +74,51 @@ class GridViewer extends StatelessWidget {
         ),
       );
     });
+  }
+
+  Positioned _buildSelectWidget(List<AssetEntity> selected, bool isSelected, BuildContext context,
+      DefaultAssetPickerProvider provider, AssetEntity asset) {
+    return Positioned.fill(
+      child: GestureDetector(
+        onTap: () {
+          if (maxAssets != 1 && selected.length == maxAssets && !isSelected) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("You can only select $maxAssets images"),
+              ),
+            );
+            return;
+          }
+          if (isSelected && selected.length > 1) {
+            provider.unSelectAsset(asset);
+          }
+          if (isSelected && selected.length == 1) {
+            provider.unSelectAsset(asset);
+            controller.previewAsset = null;
+          }
+          if (maxAssets == 1) {
+            for (final AssetEntity selectedAsset in selected) {
+              provider.unSelectAsset(selectedAsset);
+            }
+            provider.selectAsset(asset);
+            controller.previewAsset = asset;
+          } else {
+            provider.selectAsset(asset);
+          }
+        },
+        child: Consumer<DefaultAssetPickerProvider>(
+          builder: (_, provider, __) {
+            final int index = provider.selectedAssets.indexOf(asset);
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              color: isSelected
+                  ? Theme.of(context).colorScheme.primary.withOpacity(.45)
+                  : Theme.of(context).colorScheme.background.withOpacity(.1),
+              child: const SizedBox.shrink(),
+            );
+          },
+        ),
+      ),
+    );
   }
 }
