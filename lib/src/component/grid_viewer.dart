@@ -76,8 +76,13 @@ class GridViewer extends StatelessWidget {
     });
   }
 
-  Positioned _buildSelectWidget(List<AssetEntity> selected, bool isSelected, BuildContext context,
-      DefaultAssetPickerProvider provider, AssetEntity asset) {
+  Positioned _buildSelectWidget(
+    List<AssetEntity> selected,
+    bool isSelected,
+    BuildContext context,
+    DefaultAssetPickerProvider provider,
+    AssetEntity asset,
+  ) {
     return Positioned.fill(
       child: GestureDetector(
         onTap: () {
@@ -108,7 +113,6 @@ class GridViewer extends StatelessWidget {
         },
         child: Consumer<DefaultAssetPickerProvider>(
           builder: (_, provider, __) {
-            final int index = provider.selectedAssets.indexOf(asset);
             return AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               color: isSelected
