@@ -349,17 +349,45 @@ class _MzicImageAssetsPageState extends State<MzicImageAssetsPage> {
                   controller: controller,
                 ),
                 widget.isToShowButtonRecents
-                    ? Expanded(
-                        child: Row(
-                          children: [
-                            Padding(
-                              padding: _paddingButtonRecents,
-                              child: _buttonRecents(context),
-                            ),
-                          ],
+                    ? Row(
+                      children: [
+                        Padding(
+                          padding: _paddingButtonRecents,
+                          child: _buttonRecents(context),
                         ),
-                      )
+                      ],
+                    )
                     : const SizedBox.shrink(),
+                Expanded(
+                  child: Selector<DefaultAssetPickerProvider, List<AssetEntity>>(
+                      selector: (_, DefaultAssetPickerProvider p) => p.currentAssets,
+                      builder: (context, List<AssetEntity> assets, _) {
+                        return Selector<DefaultAssetPickerProvider, PathWrapper<AssetPathEntity>?>(
+                          selector: (_, DefaultAssetPickerProvider p) => p.currentPath,
+                          builder: (context, PathWrapper<AssetPathEntity>? wrapper, _) {
+                            final int totalCount = wrapper?.assetCount ?? 0;
+                            if (totalCount == 0) {
+                              return loadingWidget;
+                            }
+                            return GridView.builder(
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: totalCount,
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 4,
+                                mainAxisSpacing: 16,
+                                crossAxisSpacing: 12,
+                                mainAxisExtent: 230,
+                              ),
+                              itemBuilder: (context, index) {
+                                return Container(
+                                  color: Colors.red,
+                                );
+                              },
+                            );
+                          },
+                        );
+                      }),
+                ),
               ],
             ),
           ),
