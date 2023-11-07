@@ -9,13 +9,14 @@ class GridViewer extends StatelessWidget {
   final WidgetBuilder? failedItemBuilder;
   final int maxAssets;
   final MzicImageAssetsController controller;
+  final Color? selectedFilterColor;
 
   const GridViewer({
     super.key,
     this.loadingWidget,
     this.failedItemBuilder,
     this.maxAssets = 1,
-    required this.controller,
+    required this.controller, this.selectedFilterColor,
   });
 
   @override
@@ -116,7 +117,7 @@ class GridViewer extends StatelessWidget {
             return AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               color: isSelected
-                  ? Theme.of(context).colorScheme.primary.withOpacity(.45)
+                  ? selectedFilterColor ?? Theme.of(context).colorScheme.primary.withOpacity(.45)
                   : Theme.of(context).colorScheme.background.withOpacity(.1),
               child: const SizedBox.shrink(),
             );

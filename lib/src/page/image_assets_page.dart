@@ -76,6 +76,8 @@ class MzicImageAssetsPage extends StatefulWidget {
 
   // End recents assets page struct
 
+  final Color? selectedFilterColor;
+
   final MzicImageAssetsController? controller;
 
   const MzicImageAssetsPage({
@@ -129,6 +131,7 @@ class MzicImageAssetsPage extends StatefulWidget {
     this.recentCountTextStyle,
     this.screenBackgroundColor,
     this.recentScreenBackgroundColor,
+    this.selectedFilterColor,
   });
 
   @override
@@ -365,6 +368,7 @@ class _MzicImageAssetsPageState extends State<MzicImageAssetsPage> {
                     loadingWidget: loadingWidget,
                     failedItemBuilder: failedItemBuilder,
                     maxAssets: maxAssets,
+                    selectedFilterColor: widget.selectedFilterColor,
                   ),
                 ),
               ],
