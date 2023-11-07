@@ -8,7 +8,7 @@ class GridViewer extends StatelessWidget {
   final Widget? loadingWidget;
   final WidgetBuilder? failedItemBuilder;
   final int maxAssets;
-  final MzicImageAssetsController controller;
+  final ImageAssetsController controller;
   final Color? selectedFilterColor;
 
   const GridViewer({

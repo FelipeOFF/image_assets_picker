@@ -7,8 +7,8 @@ import 'package:insta_assets_crop/insta_assets_crop.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
-class MzicCropViewer extends StatefulWidget {
-  final MzicImageAssetsCropViewController? controller;
+class CropViewer extends StatefulWidget {
+  final ImageAssetsCropViewController? controller;
   final AssetEntity? assetEntity;
   final Widget? loadingWidget;
   final Size? size;
@@ -19,7 +19,7 @@ class MzicCropViewer extends StatefulWidget {
   final ValueChanged<AssetEntity>? unSelectAsset;
   final Color? backgroundColor;
 
-  const MzicCropViewer({
+  const CropViewer({
     super.key,
     this.controller,
     this.assetEntity,
@@ -34,13 +34,13 @@ class MzicCropViewer extends StatefulWidget {
   });
 
   @override
-  State<MzicCropViewer> createState() => MzicCropViewerState();
+  State<CropViewer> createState() => CropViewerState();
 }
 
-class MzicCropViewerState extends State<MzicCropViewer> {
+class CropViewerState extends State<CropViewer> {
   final _cropKey = GlobalKey<CropState>();
 
-  MzicImageAssetsCropViewController get controller => widget.controller ?? MzicImageAssetsCropViewControllerGeneric();
+  ImageAssetsCropViewController get controller => widget.controller ?? ImageAssetsCropViewControllerGeneric();
 
   Widget get loadingWidget => Center(child: widget.loadingWidget ?? const CircularProgressIndicator());
 
@@ -53,7 +53,7 @@ class MzicCropViewerState extends State<MzicCropViewer> {
     super.initState();
     controller.init();
     controller.cropRatios = widget.cropRatios;
-    if (controller is MzicImageAssetsCropViewControllerGeneric && widget.assetEntity != null) {
+    if (controller is ImageAssetsCropViewControllerGeneric && widget.assetEntity != null) {
       controller.previewAsset = widget.assetEntity;
     }
   }

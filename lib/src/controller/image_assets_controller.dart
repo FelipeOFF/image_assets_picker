@@ -4,7 +4,7 @@ import 'package:image_assets_picker/src/model/assets_crop_data.dart';
 import 'package:image_assets_picker/src/util/constants.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
-abstract class BaseMzicImageAssetsController {
+abstract class BaseImageAssetsController {
   bool isInit = false;
   bool isDisposed = false;
 
@@ -27,23 +27,23 @@ abstract class BaseMzicImageAssetsController {
   void _dispose() {}
 }
 
-class MzicImageAssetsController extends BaseMzicImageAssetsController with MzicImageAssetsCropViewController {}
+class ImageAssetsController extends BaseImageAssetsController with ImageAssetsCropViewController {}
 
-class MzicImageAssetsCropViewControllerGeneric extends BaseMzicImageAssetsController
-    with MzicImageAssetsCropViewController {}
+class ImageAssetsCropViewControllerGeneric extends BaseImageAssetsController
+    with ImageAssetsCropViewController {}
 
-mixin MzicImageAssetsCropViewController on BaseMzicImageAssetsController {
+mixin ImageAssetsCropViewController on BaseImageAssetsController {
   final ValueNotifier<AssetEntity?> previewAssetVN = ValueNotifier<AssetEntity?>(null);
   final ValueNotifier<bool> isLoadingErrorVM = ValueNotifier<bool>(false);
-  final ValueNotifier<List<MzicAssetsCropData>> listOfAssetsCropVM = ValueNotifier<List<MzicAssetsCropData>>([]);
+  final ValueNotifier<List<AssetsCropData>> listOfAssetsCropVM = ValueNotifier<List<AssetsCropData>>([]);
   final ValueNotifier<List<double>> cropRatiosVM = ValueNotifier<List<double>>(kCropRatios);
   final ValueNotifier<int> cropRatioIndexVM = ValueNotifier<int>(0);
 
   AssetEntity? get previewAsset => previewAssetVN.value;
   set previewAsset(AssetEntity? value) => previewAssetVN.value = value;
 
-  List<MzicAssetsCropData> get listOfAssetsCrop => listOfAssetsCropVM.value;
-  set listOfAssetsCrop(List<MzicAssetsCropData> value) => listOfAssetsCropVM.value = value;
+  List<AssetsCropData> get listOfAssetsCrop => listOfAssetsCropVM.value;
+  set listOfAssetsCrop(List<AssetsCropData> value) => listOfAssetsCropVM.value = value;
 
   bool get isLoadingError => isLoadingErrorVM.value;
   set isLoadingError(bool value) => isLoadingErrorVM.value = value;
@@ -57,7 +57,7 @@ mixin MzicImageAssetsCropViewController on BaseMzicImageAssetsController {
   double get aspectRatio => cropRatios[cropRatioIndex];
   set aspectRatio(double value) => cropRatioIndex = cropRatios.indexOf(value);
 
-  MzicAssetsCropData? getAssetsCropByAssetEntity(AssetEntity asset) {
+  AssetsCropData? getAssetsCropByAssetEntity(AssetEntity asset) {
     if (listOfAssetsCrop.isEmpty) return null;
     final index = listOfAssetsCrop.indexWhere((e) => e.asset == asset);
     if (index == -1) return null;
@@ -75,14 +75,14 @@ mixin MzicImageAssetsCropViewController on BaseMzicImageAssetsController {
       final savedCropAsset = getAssetsCropByAssetEntity(selectedAsset);
 
       if (selectedAsset == saveAsset && saveAsset != null) {
-        return MzicAssetsCropData.fromState(
+        return AssetsCropData.fromState(
           asset: saveAsset,
           cropParam: cropParam,
           scale: scale,
           area: area,
         );
       } else if (savedCropAsset == null) {
-        return MzicAssetsCropData.fromState(
+        return AssetsCropData.fromState(
           asset: selectedAsset,
         );
       } else {

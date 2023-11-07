@@ -10,7 +10,7 @@ const _kInitializeDelayDuration = Duration(milliseconds: 250);
 
 typedef OnPermissionDenied = void Function(BuildContext context, String errorDescription);
 
-class MzicImageAssetsPage extends StatefulWidget {
+class ImageAssetsPage extends StatefulWidget {
   final Color? screenBackgroundColor;
 
   // App bar struct
@@ -78,9 +78,9 @@ class MzicImageAssetsPage extends StatefulWidget {
 
   final Color? selectedFilterColor;
 
-  final MzicImageAssetsController? controller;
+  final ImageAssetsController? controller;
 
-  const MzicImageAssetsPage({
+  const ImageAssetsPage({
     super.key,
     this.appBar,
     this.title,
@@ -135,10 +135,10 @@ class MzicImageAssetsPage extends StatefulWidget {
   });
 
   @override
-  State<MzicImageAssetsPage> createState() => _MzicImageAssetsPageState();
+  State<ImageAssetsPage> createState() => _ImageAssetsPageState();
 }
 
-class _MzicImageAssetsPageState extends State<MzicImageAssetsPage> {
+class _ImageAssetsPageState extends State<ImageAssetsPage> {
   String get _title => widget.title ?? "Select images";
 
   Color get _appBarBackgroundColor => widget.appBarBackgroundColor ?? Theme.of(context).colorScheme.inversePrimary;
@@ -248,9 +248,17 @@ class _MzicImageAssetsPageState extends State<MzicImageAssetsPage> {
 
   AssetPickerTextDelegate get textDelegate => widget.textDelegate ?? defaultTextDelegate(context);
 
-  Widget get loadingWidget => widget.loadingWidget ?? const CircularProgressIndicator();
+  Widget get loadingWidget =>
+      widget.loadingWidget ??
+      const Center(
+        child: SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(),
+        ),
+      );
 
-  MzicImageAssetsController get controller => widget.controller ?? MzicImageAssetsController();
+  ImageAssetsController get controller => widget.controller ?? ImageAssetsController();
 
   EdgeInsets get _paddingButtonRecents => widget.paddingButtonRecents ?? const EdgeInsets.all(16.0);
 
@@ -348,7 +356,7 @@ class _MzicImageAssetsPageState extends State<MzicImageAssetsPage> {
             appBar: _appBar,
             body: Column(
               children: [
-                MzicCropViewer(
+                CropViewer(
                   loadingWidget: loadingWidget,
                   controller: controller,
                 ),
