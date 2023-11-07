@@ -8,6 +8,10 @@ library image_assets_picker;
 //     SpecialItemPosition,
 //     PhotoManager;
 
+// Model
+export 'package:image_assets_picker/src/model/assets_crop_data.dart';
+export 'package:image_assets_picker/src/model/assets_export_details.dart';
+
 // Components
 export 'package:image_assets_picker/src/component/crop_viewer.dart';
 export 'package:image_assets_picker/src/component/grid_viewer.dart';
