@@ -10,6 +10,7 @@ library image_assets_picker;
 
 // Components
 export 'package:image_assets_picker/src/component/crop_viewer.dart';
+export 'package:image_assets_picker/src/component/grid_viewer.dart';
 
 // Page
 export 'package:image_assets_picker/src/page/recents_assets_page.dart';
