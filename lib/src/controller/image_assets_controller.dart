@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_assets_picker/src/model/assets_export_details.dart';
 import 'package:insta_assets_crop/insta_assets_crop.dart';
 import 'package:image_assets_picker/src/model/assets_crop_data.dart';
 import 'package:image_assets_picker/src/util/constants.dart';
@@ -29,8 +32,7 @@ abstract class BaseImageAssetsController {
 
 class ImageAssetsController extends BaseImageAssetsController with ImageAssetsCropViewController {}
 
-class ImageAssetsCropViewControllerGeneric extends BaseImageAssetsController
-    with ImageAssetsCropViewController {}
+class ImageAssetsCropViewControllerGeneric extends BaseImageAssetsController with ImageAssetsCropViewController {}
 
 mixin ImageAssetsCropViewController on BaseImageAssetsController {
   final ValueNotifier<AssetEntity?> previewAssetVN = ValueNotifier<AssetEntity?>(null);
@@ -38,6 +40,7 @@ mixin ImageAssetsCropViewController on BaseImageAssetsController {
   final ValueNotifier<List<AssetsCropData>> listOfAssetsCropVM = ValueNotifier<List<AssetsCropData>>([]);
   final ValueNotifier<List<double>> cropRatiosVM = ValueNotifier<List<double>>(kCropRatios);
   final ValueNotifier<int> cropRatioIndexVM = ValueNotifier<int>(0);
+  final ValueNotifier<double> preferredSizeVM = ValueNotifier<double>(kPreferredCropSize);
 
   AssetEntity? get previewAsset => previewAssetVN.value;
   set previewAsset(AssetEntity? value) => previewAssetVN.value = value;
@@ -56,6 +59,9 @@ mixin ImageAssetsCropViewController on BaseImageAssetsController {
 
   double get aspectRatio => cropRatios[cropRatioIndex];
   set aspectRatio(double value) => cropRatioIndex = cropRatios.indexOf(value);
+
+  double get preferredSize => preferredSizeVM.value;
+  set preferredSize(double value) => preferredSizeVM.value = value;
 
   AssetsCropData? getAssetsCropByAssetEntity(AssetEntity asset) {
     if (listOfAssetsCrop.isEmpty) return null;
@@ -97,6 +103,59 @@ mixin ImageAssetsCropViewController on BaseImageAssetsController {
     } else {
       cropRatioIndex = 0;
     }
+  }
+
+  /// Apply all the crop parameters to the list of [selectedAssets]
+  /// and returns the exportation as a [Stream]
+  Stream<InstaAssetsExportDetails> exportCropFiles() async* {
+    List<File> croppedFiles = [];
+
+    /// Returns the [InstaAssetsExportDetails] with given progress value [p]
+    InstaAssetsExportDetails makeDetail(double p) => InstaAssetsExportDetails(
+          croppedFiles: croppedFiles,
+          selectedAssets: listOfAssetsCrop.map((e) => e.asset).toList(),
+          aspectRatio: aspectRatio,
+          progress: p,
+        );
+
+    // start progress
+    yield makeDetail(0);
+    final list = listOfAssetsCrop;
+
+    final step = 1 / list.length;
+
+    for (var i = 0; i < list.length; i++) {
+      final file = await list[i].asset.originFile;
+
+      final scale = list[i].scale;
+      final area = list[i].area;
+
+      if (file == null) {
+        throw 'error file is null';
+      }
+
+      // makes the sample file to not be too small
+      final sampledFile = await InstaAssetsCrop.sampleImage(
+        file: file,
+        preferredSize: (preferredSize / scale).round(),
+      );
+
+      if (area == null) {
+        croppedFiles.add(sampledFile);
+      } else {
+        // crop the file with the area selected
+        final croppedFile = await InstaAssetsCrop.cropImage(file: sampledFile, area: area);
+        // delete the not needed sample file
+        sampledFile.delete();
+
+        croppedFiles.add(croppedFile);
+      }
+
+      // increase progress
+      yield makeDetail((i + 1) * step);
+    }
+    // complete progress
+    yield makeDetail(1);
   }
 
   @override

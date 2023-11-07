@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_assets_picker/src/component/crop_viewer.dart';
 import 'package:image_assets_picker/src/component/grid_viewer.dart';
 import 'package:image_assets_picker/src/controller/image_assets_controller.dart';
+import 'package:image_assets_picker/src/model/assets_export_details.dart';
 import 'package:image_assets_picker/src/page/recents_assets_page.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
@@ -9,6 +10,7 @@ import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 const _kInitializeDelayDuration = Duration(milliseconds: 250);
 
 typedef OnPermissionDenied = void Function(BuildContext context, String errorDescription);
+typedef OnActionPressed = void Function(Stream<InstaAssetsExportDetails> asset);
 
 class ImageAssetsPage extends StatefulWidget {
   final Color? screenBackgroundColor;
@@ -27,7 +29,7 @@ class ImageAssetsPage extends StatefulWidget {
   final String? actionText;
   final TextStyle? actionTextStyle;
   final ButtonStyle? actionButtonStyle;
-  final VoidCallback? onActionPressed;
+  final OnActionPressed? onActionPressed;
   final bool isDoneButton;
 
   // End app bar struct
@@ -175,8 +177,8 @@ class _ImageAssetsPageState extends State<ImageAssetsPage> {
 
   String get _actionText => widget.actionText ?? "Done";
 
-  VoidCallback? get _onActionPressed =>
-      widget.onActionPressed ?? (widget.isDoneButton ? () => Navigator.pop(context) : null);
+  OnActionPressed? get _onActionPressed =>
+      widget.onActionPressed ?? (widget.isDoneButton ? (asset) => Navigator.pop(context) : null);
 
   TextStyle get _actionTextStyle =>
       widget.actionTextStyle ??
@@ -195,7 +197,9 @@ class _ImageAssetsPageState extends State<ImageAssetsPage> {
   Widget get _action =>
       widget.action ??
       TextButton(
-        onPressed: _onActionPressed,
+        onPressed: () {
+          _onActionPressed?.call(controller.exportCropFiles());
+        },
         style: _actionButtonStyle,
         child: Text(
           _actionText,

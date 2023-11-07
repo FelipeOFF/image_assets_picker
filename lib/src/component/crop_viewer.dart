@@ -51,6 +51,7 @@ class CropViewerState extends State<CropViewer> {
   @override
   void initState() {
     super.initState();
+    controller.preferredSize = widget.preferredSize;
     controller.init();
     controller.cropRatios = widget.cropRatios;
     if (controller is ImageAssetsCropViewControllerGeneric && widget.assetEntity != null) {
