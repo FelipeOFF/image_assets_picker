@@ -8,6 +8,14 @@ import 'package:image_assets_picker/src/util/constants.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 abstract class BaseImageAssetsController {
+
+  final ValueNotifier<List<AssetsCropData>> listOfAssetsCropVM = ValueNotifier<List<AssetsCropData>>([]);
+  final ValueNotifier<AssetEntity?> previewAssetVN = ValueNotifier<AssetEntity?>(null);
+  final ValueNotifier<bool> isLoadingErrorVM = ValueNotifier<bool>(false);
+  final ValueNotifier<List<double>> cropRatiosVM = ValueNotifier<List<double>>(kCropRatios);
+  final ValueNotifier<int> cropRatioIndexVM = ValueNotifier<int>(0);
+  final ValueNotifier<double> preferredSizeVM = ValueNotifier<double>(kPreferredCropSize);
+
   bool isInit = false;
   bool isDisposed = false;
 
@@ -24,23 +32,41 @@ abstract class BaseImageAssetsController {
   void dispose() {
     if (isDisposed) return;
     isDisposed = true;
+    listOfAssetsCropVM.dispose();
+    previewAssetVN.dispose();
+    isLoadingErrorVM.dispose();
+    cropRatiosVM.dispose();
+    cropRatioIndexVM.dispose();
     _dispose();
   }
 
   void _dispose() {}
 }
 
-class ImageAssetsController extends BaseImageAssetsController with ImageAssetsCropViewController {}
+class ImageAssetsController extends BaseImageAssetsController with ImageAssetsCropViewController {
 
-class ImageAssetsCropViewControllerGeneric extends BaseImageAssetsController with ImageAssetsCropViewController {}
+  static final ImageAssetsController _instance = ImageAssetsController._internal();
+
+  factory ImageAssetsController() {
+    return _instance;
+  }
+
+  ImageAssetsController._internal();
+}
+
+class ImageAssetsCropViewControllerGeneric extends BaseImageAssetsController with ImageAssetsCropViewController {
+
+
+  static final ImageAssetsCropViewControllerGeneric _instance = ImageAssetsCropViewControllerGeneric._internal();
+
+  factory ImageAssetsCropViewControllerGeneric() {
+    return _instance;
+  }
+
+  ImageAssetsCropViewControllerGeneric._internal();
+}
 
 mixin ImageAssetsCropViewController on BaseImageAssetsController {
-  final ValueNotifier<AssetEntity?> previewAssetVN = ValueNotifier<AssetEntity?>(null);
-  final ValueNotifier<bool> isLoadingErrorVM = ValueNotifier<bool>(false);
-  final ValueNotifier<List<AssetsCropData>> listOfAssetsCropVM = ValueNotifier<List<AssetsCropData>>([]);
-  final ValueNotifier<List<double>> cropRatiosVM = ValueNotifier<List<double>>(kCropRatios);
-  final ValueNotifier<int> cropRatioIndexVM = ValueNotifier<int>(0);
-  final ValueNotifier<double> preferredSizeVM = ValueNotifier<double>(kPreferredCropSize);
 
   AssetEntity? get previewAsset => previewAssetVN.value;
   set previewAsset(AssetEntity? value) => previewAssetVN.value = value;
@@ -77,7 +103,7 @@ mixin ImageAssetsCropViewController on BaseImageAssetsController {
     double scale = 1.0,
     Rect? area,
   }) {
-    listOfAssetsCrop = selectedAssets.map((selectedAsset) {
+    final listOfAssetsCrop = selectedAssets.map((selectedAsset) {
       final savedCropAsset = getAssetsCropByAssetEntity(selectedAsset);
 
       if (selectedAsset == saveAsset && saveAsset != null) {
@@ -95,6 +121,7 @@ mixin ImageAssetsCropViewController on BaseImageAssetsController {
         return savedCropAsset;
       }
     }).toList();
+    this.listOfAssetsCrop = listOfAssetsCrop;
   }
 
   void nextCropRatio() {
@@ -160,11 +187,6 @@ mixin ImageAssetsCropViewController on BaseImageAssetsController {
 
   @override
   void _dispose() {
-    previewAssetVN.dispose();
-    listOfAssetsCropVM.dispose();
-    isLoadingErrorVM.dispose();
-    cropRatiosVM.dispose();
-    cropRatioIndexVM.dispose();
     super.dispose();
   }
 }

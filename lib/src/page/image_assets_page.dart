@@ -213,6 +213,7 @@ class _ImageAssetsPageState extends State<ImageAssetsPage> {
                   setState(() {
                     showButtonLoading = true;
                   });
+                  formKey.currentState?.saveCurrentCropChanges(provider.selectedAssets);
                   await _onActionPressed!(controller.exportCropFiles());
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     setState(() {
@@ -363,6 +364,8 @@ class _ImageAssetsPageState extends State<ImageAssetsPage> {
         },
       );
 
+  final GlobalKey<CropViewerState> formKey = GlobalKey<CropViewerState>();
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -382,6 +385,7 @@ class _ImageAssetsPageState extends State<ImageAssetsPage> {
             body: Column(
               children: [
                 CropViewer(
+                  key: formKey,
                   loadingWidget: loadingWidget,
                   controller: controller,
                 ),

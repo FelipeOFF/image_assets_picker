@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_assets_picker/image_assets_picker.dart';
 
@@ -40,7 +41,15 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text("Image Assets Picker demo"),
       ),
-      body: const ImageAssetsPage(),
+      body: ImageAssetsPage(
+        onActionPressed: (Stream<InstaAssetsExportDetails> asset) async {
+          await for (final InstaAssetsExportDetails asset in asset) {
+            if (kDebugMode) {
+              print(asset);
+            }
+          }
+        }
+      ),
     );
   }
 }
