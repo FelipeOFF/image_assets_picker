@@ -201,7 +201,13 @@ class _ImageAssetsPageState extends State<ImageAssetsPage> {
   Widget get _action =>
       widget.action ??
       (showButtonLoading
-          ? TextButton(
+          ? Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8.0,
+              ),
+              child: loadingWidget,
+            )
+          : TextButton(
               onPressed: () async {
                 if (widget.isToShowButtonLoading && _onActionPressed != null) {
                   setState(() {
@@ -220,8 +226,7 @@ class _ImageAssetsPageState extends State<ImageAssetsPage> {
                 _actionText,
                 style: _actionTextStyle,
               ),
-            )
-          : loadingWidget);
+            ));
 
   PreferredSizeWidget get _appBar {
     return widget.appBar ??
