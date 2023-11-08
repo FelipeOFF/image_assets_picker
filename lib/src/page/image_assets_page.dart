@@ -10,7 +10,7 @@ import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 const _kInitializeDelayDuration = Duration(milliseconds: 250);
 
 typedef OnPermissionDenied = void Function(BuildContext context, String errorDescription);
-typedef OnActionPressed = void Function(Stream<InstaAssetsExportDetails> asset);
+typedef OnActionPressed = Future<void> Function(Stream<InstaAssetsExportDetails> asset);
 
 class ImageAssetsPage extends StatefulWidget {
   final Color? screenBackgroundColor;
@@ -79,6 +79,7 @@ class ImageAssetsPage extends StatefulWidget {
   // End recents assets page struct
 
   final Color? selectedFilterColor;
+  final bool isToShowButtonLoading;
 
   final ImageAssetsController? controller;
 
@@ -134,6 +135,7 @@ class ImageAssetsPage extends StatefulWidget {
     this.screenBackgroundColor,
     this.recentScreenBackgroundColor,
     this.selectedFilterColor,
+    this.isToShowButtonLoading = false,
   });
 
   @override
@@ -178,7 +180,7 @@ class _ImageAssetsPageState extends State<ImageAssetsPage> {
   String get _actionText => widget.actionText ?? "Done";
 
   OnActionPressed? get _onActionPressed =>
-      widget.onActionPressed ?? (widget.isDoneButton ? (asset) => Navigator.pop(context) : null);
+      widget.onActionPressed ?? (widget.isDoneButton ? (asset) async => Navigator.pop(context) : null);
 
   TextStyle get _actionTextStyle =>
       widget.actionTextStyle ??
@@ -194,18 +196,32 @@ class _ImageAssetsPageState extends State<ImageAssetsPage> {
         ),
       );
 
+  bool showButtonLoading = false;
+
   Widget get _action =>
       widget.action ??
-      TextButton(
-        onPressed: () {
-          _onActionPressed?.call(controller.exportCropFiles());
-        },
-        style: _actionButtonStyle,
-        child: Text(
-          _actionText,
-          style: _actionTextStyle,
-        ),
-      );
+      (showButtonLoading
+          ? TextButton(
+              onPressed: () async {
+                if (widget.isToShowButtonLoading && _onActionPressed != null) {
+                  setState(() {
+                    showButtonLoading = true;
+                  });
+                  await _onActionPressed!(controller.exportCropFiles());
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    setState(() {
+                      showButtonLoading = false;
+                    });
+                  });
+                }
+              },
+              style: _actionButtonStyle,
+              child: Text(
+                _actionText,
+                style: _actionTextStyle,
+              ),
+            )
+          : loadingWidget);
 
   PreferredSizeWidget get _appBar {
     return widget.appBar ??
@@ -393,7 +409,6 @@ class _ImageAssetsPageState extends State<ImageAssetsPage> {
 
   Widget failedItemBuilder(BuildContext context) {
     return const Center(
-      // TODO make it customizable
       child: Text(
         "Can't open the image",
       ),
