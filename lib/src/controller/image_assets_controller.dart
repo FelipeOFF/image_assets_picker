@@ -45,25 +45,39 @@ abstract class BaseImageAssetsController {
 
 class ImageAssetsController extends BaseImageAssetsController with ImageAssetsCropViewController {
 
-  static final ImageAssetsController _instance = ImageAssetsController._internal();
+  static ImageAssetsController? _instance;
 
   factory ImageAssetsController() {
-    return _instance;
+    _instance ??= ImageAssetsController._internal();
+    return _instance!;
   }
 
   ImageAssetsController._internal();
+
+  @override
+  void _dispose() {
+    _instance = null;
+    super._dispose();
+  }
 }
 
 class ImageAssetsCropViewControllerGeneric extends BaseImageAssetsController with ImageAssetsCropViewController {
 
 
-  static final ImageAssetsCropViewControllerGeneric _instance = ImageAssetsCropViewControllerGeneric._internal();
+  static ImageAssetsCropViewControllerGeneric? _instance;
 
   factory ImageAssetsCropViewControllerGeneric() {
-    return _instance;
+    _instance ??= ImageAssetsCropViewControllerGeneric._internal();
+    return _instance!;
   }
 
   ImageAssetsCropViewControllerGeneric._internal();
+
+  @override
+  void _dispose() {
+    _instance = null;
+    super._dispose();
+  }
 }
 
 mixin ImageAssetsCropViewController on BaseImageAssetsController {
@@ -183,10 +197,5 @@ mixin ImageAssetsCropViewController on BaseImageAssetsController {
     }
     // complete progress
     yield makeDetail(1);
-  }
-
-  @override
-  void _dispose() {
-    super.dispose();
   }
 }

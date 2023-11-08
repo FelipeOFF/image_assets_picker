@@ -457,6 +457,7 @@ class _ImageAssetsPageState extends State<ImageAssetsPage> {
   @override
   void dispose() {
     provider.dispose();
+    controller.dispose();
     super.dispose();
   }
 }
