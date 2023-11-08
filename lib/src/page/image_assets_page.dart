@@ -209,7 +209,7 @@ class _ImageAssetsPageState extends State<ImageAssetsPage> {
             )
           : TextButton(
               onPressed: () async {
-                if (widget.isToShowButtonLoading && _onActionPressed != null) {
+                if (!widget.isToShowButtonLoading && _onActionPressed != null) {
                   setState(() {
                     showButtonLoading = true;
                   });
