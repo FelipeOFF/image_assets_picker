@@ -203,7 +203,7 @@ class _ImageAssetsPageState extends State<ImageAssetsPage> {
       (showButtonLoading
           ? Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: 8.0,
+                horizontal: 24.0,
               ),
               child: loadingWidget,
             )
