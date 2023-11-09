@@ -98,7 +98,7 @@ class CameraAssetPickerPage extends StatefulWidget {
   // Bottom Buttons
 
   final Widget Function(AnimationController)? bottomButtonsBuilder;
-  final EdgeInsets? bottomButtonsPadding;
+  final EdgeInsets? textButtonsPadding;
 
   // Bottom Buttons
 
@@ -115,6 +115,34 @@ class CameraAssetPickerPage extends StatefulWidget {
   final Color? usePhotoButtonColor;
 
   // Use photo button
+
+  // Top Buttons
+
+  final Widget Function(AnimationController)? topButtonsBuilder;
+
+  // Top Buttons
+
+  // Top Cancel button
+
+  final String? cancelButtonText;
+  final Color? cancelButtonColor;
+
+  // Top Cancel button
+
+  // Top Save button
+
+  final String? saveButtonText;
+  final Color? saveButtonColor;
+
+  // Top Save button
+
+  // Crop button rotate
+
+  final Widget? cropButtonRotate;
+  final Widget? cropButtonIcon;
+  final Color? cropButtonColor;
+
+  // Crop button rotate
 
   const CameraAssetPickerPage({
     super.key,
@@ -156,9 +184,16 @@ class CameraAssetPickerPage extends StatefulWidget {
     this.shapeBottomColor,
     this.shapeBottomHeight,
     this.bottomButtonsBuilder,
-    this.bottomButtonsPadding,
+    this.textButtonsPadding,
     this.retakeButtonText,
-    this.retakeButtonColor, this.usePhotoButtonText, this.usePhotoButtonColor,
+    this.retakeButtonColor,
+    this.usePhotoButtonText,
+    this.usePhotoButtonColor,
+    this.topButtonsBuilder,
+    this.cancelButtonText,
+    this.cancelButtonColor,
+    this.saveButtonText,
+    this.saveButtonColor, this.cropButtonRotate, this.cropButtonIcon, this.cropButtonColor,
   });
 
   @override
@@ -176,9 +211,16 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
     duration: const Duration(milliseconds: 300),
   );
 
+  late final AnimationController _animationTransitionHeaderButtonController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 300),
+  );
+
   double get _animationFlashControllerValue => _animationFlashController.value;
 
   double get _animationTransitionViewControllerValue => _animationTransitionViewController.value;
+
+  double get _animationTransitionHeaderButtonControllerValue => _animationTransitionHeaderButtonController.value;
 
   late final CameraAssetPickerController controller = widget.controller ?? CameraAssetPickerController();
   late CameraController cameraController = widget.cameraController ??
@@ -468,6 +510,48 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
 
   double get shapeHeaderHeight => widget.shapeHeaderHeight ?? 77;
 
+  Color get cancelButtonColor => widget.cancelButtonColor ?? const Color(0xFFE6E6EA);
+
+  String get cancelButtonText => widget.cancelButtonText ?? "Cancel";
+
+  String get saveButtonText => widget.saveButtonText ?? "Save";
+
+  Color get saveButtonColor => widget.saveButtonColor ?? const Color(0xFFE6E6EA);
+
+  Row _buildTopButtons() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        _buildButton(
+          cancelButtonText,
+          cancelButtonColor,
+          onPressed: () {
+            _animationTransitionHeaderButtonController.reverse();
+          },
+        ),
+        const Spacer(),
+        _buildButton(
+          saveButtonText,
+          saveButtonColor,
+          onPressed: () {
+            // TODO save image and return
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget get headerButtonTransition => AnimatedBuilder(
+        animation: _animationTransitionHeaderButtonController,
+        builder: (context, child) {
+          return Opacity(
+            opacity: _animationTransitionHeaderButtonControllerValue,
+            child: child,
+          );
+        },
+        child: _buildTopButtons(),
+      );
+
   Widget get headerCoverAnimation => Positioned(
         top: 0,
         left: 0,
@@ -485,8 +569,8 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
             );
           },
           child: Container(
-            // TODO add buttons
             color: shapeHeaderColor,
+            child: headerButtonTransition,
           ),
         ),
       );
@@ -496,38 +580,81 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
   double get shapeBottomHeight => widget.shapeBottomHeight ?? 106;
 
   EdgeInsets get bottomButtonsPadding =>
-      widget.bottomButtonsPadding ??
+      widget.textButtonsPadding ??
       const EdgeInsets.symmetric(
         horizontal: 16,
         vertical: 8,
       );
 
   String get retakeButtonText => widget.retakeButtonText ?? "Retake";
+
   Color get retakeButtonColor => widget.retakeButtonColor ?? const Color(0xFFE6E6EA);
 
   String get usePhotoButtonText => widget.usePhotoButtonText ?? "Use photo";
+
   Color get usePhotoButtonColor => widget.usePhotoButtonColor ?? const Color(0xFF9976FF);
 
-  Widget get _buildBottomButtons => Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildButton(
-            retakeButtonText,
-            retakeButtonColor,
-            onPressed: () {
-              _animationTransitionViewController.reverse();
-              cameraController.resumePreview();
-            },
-          ),
-          const Spacer(),
-          _buildButton(
-            usePhotoButtonText,
-            usePhotoButtonColor,
-            onPressed: () {
-              // TODO go to crop
-            },
-          ),
-        ],
+  Color get cropButtonColor => widget.cropButtonColor ?? Colors.white;
+
+  Widget get buildCropButton =>
+      widget.cropButtonIcon ??
+      Icon(
+        Icons.crop,
+        color: cropButtonColor,
+      );
+
+  Widget get buildCropRotateButton =>
+      widget.cropButtonRotate ??
+      _buildIcon(
+        icon: buildCropButton,
+        onPressed: () {
+          // TODO rotate image
+        },
+      );
+
+  Widget get _buildBottomButtons => AnimatedBuilder(
+        animation: _animationTransitionHeaderButtonController,
+        builder: (context, child) {
+          return Stack(
+            children: [
+              Positioned.fill(
+                child: Opacity(
+                  opacity: 1.0 - _animationTransitionHeaderButtonControllerValue,
+                  child: child,
+                ),
+              ),
+              Positioned.fill(
+                child: Opacity(
+                  opacity: _animationTransitionHeaderButtonControllerValue,
+                  child: Center(
+                    child: buildCropRotateButton,
+                  ),
+                ),
+              )
+            ],
+          );
+        },
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildButton(
+              retakeButtonText,
+              retakeButtonColor,
+              onPressed: () {
+                _animationTransitionViewController.reverse();
+                cameraController.resumePreview();
+              },
+            ),
+            const Spacer(),
+            _buildButton(
+              usePhotoButtonText,
+              usePhotoButtonColor,
+              onPressed: () {
+                _animationTransitionHeaderButtonController.forward();
+              },
+            ),
+          ],
+        ),
       );
 
   TextButton _buildButton(String buttonText, Color buttonColor, {VoidCallback? onPressed}) {
