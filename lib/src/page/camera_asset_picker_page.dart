@@ -1,6 +1,8 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:image_assets_picker/src/component/crop_view.dart';
 import 'package:image_assets_picker/src/controller/camera_asset_picker_controller.dart';
+import 'package:insta_assets_crop/insta_assets_crop.dart';
 
 class CameraAssetPickerPage extends StatefulWidget {
   final CameraAssetPickerController? controller;
@@ -193,7 +195,10 @@ class CameraAssetPickerPage extends StatefulWidget {
     this.cancelButtonText,
     this.cancelButtonColor,
     this.saveButtonText,
-    this.saveButtonColor, this.cropButtonRotate, this.cropButtonIcon, this.cropButtonColor,
+    this.saveButtonColor,
+    this.cropButtonRotate,
+    this.cropButtonIcon,
+    this.cropButtonColor,
   });
 
   @override
@@ -201,6 +206,8 @@ class CameraAssetPickerPage extends StatefulWidget {
 }
 
 class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with TickerProviderStateMixin {
+  final GlobalKey<CropState> _cropKey = GlobalKey<CropState>();
+
   late final AnimationController _animationFlashController = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 300),
@@ -477,10 +484,22 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
     if (scale < 1) scale = 1 / scale;
 
     return Positioned.fill(
-      child: Transform.scale(
-        scale: scale,
-        child: Center(
-          child: CameraPreview(cameraController),
+      child: AnimatedBuilder(
+        animation: _animationTransitionHeaderButtonController,
+        builder: (context, child) {
+          return IgnorePointer(
+            ignoring: _animationTransitionHeaderButtonControllerValue == 1,
+            child: Opacity(
+              opacity: 1.0 - _animationTransitionHeaderButtonControllerValue,
+              child: child,
+            ),
+          );
+        },
+        child: Transform.scale(
+          scale: scale,
+          child: Center(
+            child: CameraPreview(cameraController),
+          ),
         ),
       ),
     );
@@ -649,8 +668,9 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
             _buildButton(
               usePhotoButtonText,
               usePhotoButtonColor,
-              onPressed: () {
-                _animationTransitionHeaderButtonController.forward();
+              onPressed: () async {
+                await _animationTransitionHeaderButtonController.forward();
+                await controller.saveFile();
               },
             ),
           ],
@@ -699,19 +719,44 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
         ),
       );
 
-  @override
-  void initState() {
-    super.initState();
-    controller.init();
-  }
+  Widget get cropView => Positioned.fill(
+        child: AnimatedBuilder(
+          animation: _animationTransitionHeaderButtonController,
+          builder: (context, child) {
+            return IgnorePointer(
+              ignoring: _animationTransitionHeaderButtonControllerValue == 0,
+              child: Opacity(
+                opacity: _animationTransitionHeaderButtonControllerValue,
+                child: child,
+              ),
+            );
+          },
+          child: ValueListenableBuilder(
+            valueListenable: controller.assetVN,
+            builder: (context, asset, _) {
+              if (asset == null) {
+                return _buildLoadingWidget();
+              }
+              return CropView(
+                asset: asset,
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                aspectRatio: 1.0,
+                cropKey: _cropKey,
+              );
+            },
+          ),
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: Future.wait([
-        controller.init(),
-        cameraController.initialize(),
-      ]),
+      future: Future.sync(() async {
+        await controller.init();
+        await cameraController.initialize();
+        return true;
+      }),
       builder: (context, snapshot) {
         if (snapshot.hasData == false) {
           return _buildLoadingWidget();
@@ -721,6 +766,7 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
           body: Stack(
             children: [
               cameraWidget,
+              cropView,
               animatedFlash,
               headerCoverAnimation,
               bottomCoverAnimation,
@@ -734,11 +780,14 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
   }
 
   Future<void> _takePicture() async {
+    final image = await cameraController.takePicture();
     await cameraController.pausePreview();
-    await _animationFlashController.forward();
-    await _animationFlashController.reverse();
-    await _animationTransitionViewController.forward();
-    controller.image = await cameraController.takePicture();
+    controller.image = image;
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      await _animationFlashController.forward();
+      await _animationFlashController.reverse();
+      await _animationTransitionViewController.forward();
+    });
   }
 
   @override
