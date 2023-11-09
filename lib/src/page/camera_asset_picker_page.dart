@@ -146,6 +146,12 @@ class CameraAssetPickerPage extends StatefulWidget {
 
   // Crop button rotate
 
+  // CropView
+
+  final Color? cropViewBackgroundColor;
+
+  // CropView
+
   const CameraAssetPickerPage({
     super.key,
     this.header,
@@ -198,7 +204,7 @@ class CameraAssetPickerPage extends StatefulWidget {
     this.saveButtonColor,
     this.cropButtonRotate,
     this.cropButtonIcon,
-    this.cropButtonColor,
+    this.cropButtonColor, this.cropViewBackgroundColor,
   });
 
   @override
@@ -537,6 +543,16 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
 
   Color get saveButtonColor => widget.saveButtonColor ?? const Color(0xFFE6E6EA);
 
+  Future<void> _saveCropFile() async {
+    final scale = _cropKey.currentState?.scale;
+    final area = _cropKey.currentState?.area;
+    await controller.saveCropedFile(scale, area);
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Navigator.pop(context, controller.cropedFile);
+    });
+  }
+
   Row _buildTopButtons() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -549,12 +565,25 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
           },
         ),
         const Spacer(),
-        _buildButton(
-          saveButtonText,
-          saveButtonColor,
-          onPressed: () {
-            // TODO save image and return
+        ValueListenableBuilder(
+          valueListenable: controller.isLoadingCroppedFileVN,
+          builder: (context, isLoading, child) {
+            if (isLoading || child == null) {
+              return const SizedBox(
+                width: 24,
+                height: 24,
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+            return child;
           },
+          child: _buildButton(
+            saveButtonText,
+            saveButtonColor,
+            onPressed: _saveCropFile,
+          ),
         ),
       ],
     );
@@ -694,6 +723,8 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
     );
   }
 
+  Color get cropViewBackgroundColor => widget.cropViewBackgroundColor ?? Colors.black.withOpacity(0.8);
+
   Widget get bottomCoverAnimation => Positioned(
         bottom: 0,
         left: 0,
@@ -743,6 +774,7 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
                 height: MediaQuery.of(context).size.height,
                 aspectRatio: 1.0,
                 cropKey: _cropKey,
+                backgroundColor: cropViewBackgroundColor,
               );
             },
           ),
