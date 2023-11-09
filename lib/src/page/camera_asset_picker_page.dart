@@ -109,6 +109,13 @@ class CameraAssetPickerPage extends StatefulWidget {
 
   // Retake Button
 
+  // Use photo button
+
+  final String? usePhotoButtonText;
+  final Color? usePhotoButtonColor;
+
+  // Use photo button
+
   const CameraAssetPickerPage({
     super.key,
     this.header,
@@ -151,7 +158,7 @@ class CameraAssetPickerPage extends StatefulWidget {
     this.bottomButtonsBuilder,
     this.bottomButtonsPadding,
     this.retakeButtonText,
-    this.retakeButtonColor,
+    this.retakeButtonColor, this.usePhotoButtonText, this.usePhotoButtonColor,
   });
 
   @override
@@ -496,8 +503,10 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
       );
 
   String get retakeButtonText => widget.retakeButtonText ?? "Retake";
-
   Color get retakeButtonColor => widget.retakeButtonColor ?? const Color(0xFFE6E6EA);
+
+  String get usePhotoButtonText => widget.usePhotoButtonText ?? "Use photo";
+  Color get usePhotoButtonColor => widget.usePhotoButtonColor ?? const Color(0xFF9976FF);
 
   Widget get _buildBottomButtons => Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -507,6 +516,15 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
             retakeButtonColor,
             onPressed: () {
               _animationTransitionViewController.reverse();
+              cameraController.resumePreview();
+            },
+          ),
+          const Spacer(),
+          _buildButton(
+            usePhotoButtonText,
+            usePhotoButtonColor,
+            onPressed: () {
+              // TODO go to crop
             },
           ),
         ],
@@ -589,13 +607,11 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
   }
 
   Future<void> _takePicture() async {
+    await cameraController.pausePreview();
     await _animationFlashController.forward();
     await _animationFlashController.reverse();
     await _animationTransitionViewController.forward();
-    // await _animationTransitionViewController.reverse(); // TODO remove it
-    // await cameraController.pausePreview();
-    // final image = await cameraController.takePicture();
-    // TODO handle image
+    controller.image = await cameraController.takePicture();
   }
 
   @override

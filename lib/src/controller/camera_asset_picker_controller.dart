@@ -14,6 +14,7 @@ class CameraAssetPickerController {
   final ValueNotifier<bool> flashStateVN = ValueNotifier<bool>(false);
   final ValueNotifier<List<CameraDescription>> camerasVN = ValueNotifier<List<CameraDescription>>([]);
   late final ValueNotifier<CameraDescription> cameraVN = ValueNotifier<CameraDescription>(frontCamera);
+  final ValueNotifier<XFile?> imageVN = ValueNotifier<XFile?>(null);
 
   bool get flashState => flashStateVN.value;
   set flashState(bool value) => flashStateVN.value = value;
@@ -34,6 +35,9 @@ class CameraAssetPickerController {
         orElse: () => cameras.first,
       );
 
+  XFile? get image => imageVN.value;
+  set image(XFile? value) => imageVN.value = value;
+
   Future<bool> init() async {
     final cameras = await availableCameras();
     this.cameras = cameras;
@@ -50,5 +54,8 @@ class CameraAssetPickerController {
 
   void dispose() {
     flashStateVN.dispose();
+    camerasVN.dispose();
+    cameraVN.dispose();
+    imageVN.dispose();
   }
 }
