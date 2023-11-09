@@ -69,6 +69,12 @@ class CameraAssetPickerPage extends StatefulWidget {
 
   // Loading
 
+  // Camera
+
+  final Widget Function()? cameraWidgetBuilder;
+
+  // Camera
+
   const CameraAssetPickerPage({
     super.key,
     this.header,
@@ -102,13 +108,24 @@ class CameraAssetPickerPage extends StatefulWidget {
     this.circleButtonPadding,
     this.cameraController,
     this.loadingWidgetBuilder,
+    this.cameraWidgetBuilder,
   });
 
   @override
   State<CameraAssetPickerPage> createState() => _CameraAssetPickerPageState();
 }
 
-class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> {
+class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with TickerProviderStateMixin {
+  late final AnimationController _animationFlashController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 300),
+  );
+
+  late final AnimationController _animationTransitionViewController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 300),
+  );
+
   late final CameraAssetPickerController controller = widget.controller ?? CameraAssetPickerController();
   late CameraController cameraController = widget.cameraController ??
       CameraController(
@@ -199,9 +216,9 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> {
 
   VoidCallback get onPressedFlash =>
       widget.onPressedFlash ??
-      () {
+      () async {
         controller.toggleFlashState();
-        cameraController.setFlashMode(controller.flashState ? FlashMode.always : FlashMode.off);
+        await cameraController.setFlashMode(controller.flashState ? FlashMode.always : FlashMode.off);
       };
 
   VoidCallback get onPressedRotateCamera =>
@@ -222,9 +239,12 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> {
 
   VoidCallback get onPressedTakePicture =>
       widget.onPressedTakePicture ??
-      () {
-        // TODO take picture
-        print("Take picture");
+      () async {
+        await _animationFlashController.forward();
+        await _animationFlashController.reverse();
+        // await cameraController.pausePreview();
+        // final image = await cameraController.takePicture();
+        // TODO handle image
       };
 
   Widget get _buildCloseButton =>
@@ -337,20 +357,40 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> {
           child: CircularProgressIndicator(),
         );
 
-  Widget cameraWidget(context) {
+  Widget _buildCameraWidget() {
     var camera = cameraController.value;
     final size = MediaQuery.of(context).size;
     var scale = size.aspectRatio * camera.aspectRatio;
 
     if (scale < 1) scale = 1 / scale;
 
-    return Transform.scale(
-      scale: scale,
-      child: Center(
-        child: CameraPreview(cameraController),
+    return Positioned.fill(
+      child: Transform.scale(
+        scale: scale,
+        child: Center(
+          child: CameraPreview(cameraController),
+        ),
       ),
     );
   }
+
+  Widget get cameraWidget => widget.cameraWidgetBuilder != null ? widget.cameraWidgetBuilder!() : _buildCameraWidget();
+
+  Widget get animatedFlash => AnimatedBuilder(
+        animation: _animationFlashController,
+        builder: (context, child) {
+          return IgnorePointer(
+            ignoring: _animationFlashController.value == 0,
+            child: Opacity(
+              opacity: _animationFlashController.value,
+              child: child,
+            ),
+          );
+        },
+        child: Container(
+          color: Colors.white,
+        ),
+      );
 
   @override
   void initState() {
@@ -373,9 +413,8 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> {
         return Scaffold(
           body: Stack(
             children: [
-              Positioned.fill(
-                child: cameraWidget(context),
-              ),
+              cameraWidget,
+              animatedFlash,
               _buildHeader,
               _buildElipsedBottomButton,
             ],
