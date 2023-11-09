@@ -1,8 +1,10 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:image_assets_picker/src/controller/camera_asset_picker_controller.dart';
 
 class CameraAssetPickerPage extends StatefulWidget {
   final CameraAssetPickerController? controller;
+  final CameraController? cameraController;
 
   // Header
   final Positioned? header;
@@ -61,6 +63,12 @@ class CameraAssetPickerPage extends StatefulWidget {
 
   // Circle button take picture
 
+  // Loading
+
+  final Widget Function()? loadingWidgetBuilder;
+
+  // Loading
+
   const CameraAssetPickerPage({
     super.key,
     this.header,
@@ -83,7 +91,17 @@ class CameraAssetPickerPage extends StatefulWidget {
     this.controller,
     this.rotateCameraButton,
     this.rotateCameraIcon,
-    this.onPressedRotateCamera, this.circleButtonTakePicture, this.onPressedTakePicture, this.circleButtonColor, this.circleButtonBorderColor, this.circleButtonSize, this.circleStrokeWidth, this.circleRadius, this.circleButtonPadding,
+    this.onPressedRotateCamera,
+    this.circleButtonTakePicture,
+    this.onPressedTakePicture,
+    this.circleButtonColor,
+    this.circleButtonBorderColor,
+    this.circleButtonSize,
+    this.circleStrokeWidth,
+    this.circleRadius,
+    this.circleButtonPadding,
+    this.cameraController,
+    this.loadingWidgetBuilder,
   });
 
   @override
@@ -91,7 +109,15 @@ class CameraAssetPickerPage extends StatefulWidget {
 }
 
 class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> {
-  CameraAssetPickerController get controller => widget.controller ?? CameraAssetPickerController();
+  late final CameraAssetPickerController controller = widget.controller ?? CameraAssetPickerController();
+  late CameraController cameraController = widget.cameraController ??
+      CameraController(
+        controller.camera,
+        ResolutionPreset.max,
+        enableAudio: false,
+        imageFormatGroup: ImageFormatGroup.jpeg,
+      )
+    ..setFlashMode(controller.flashState ? FlashMode.always : FlashMode.off);
 
   double get topIconsSplashRadius => widget.topIconsSplashRadius ?? 12;
 
@@ -101,10 +127,10 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> {
 
   BoxConstraints get topIconsConstraints =>
       widget.topIconsConstraints ??
-          const BoxConstraints(
-            minWidth: 34,
-            minHeight: 34,
-          );
+      const BoxConstraints(
+        minWidth: 34,
+        minHeight: 34,
+      );
 
   double get topIconsCircularRadius => widget.topIconsCircularRadius ?? 12;
 
@@ -112,16 +138,16 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> {
 
   ButtonStyle get topIconsStyle =>
       widget.topIconsStyle ??
-          ButtonStyle(
-            shape: MaterialStateProperty.all(
-              RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(topIconsCircularRadius),
-                ),
-              ),
+      ButtonStyle(
+        shape: MaterialStateProperty.all(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(topIconsCircularRadius),
             ),
-            backgroundColor: MaterialStateProperty.all(topIconsBackgroundColor),
-          );
+          ),
+        ),
+        backgroundColor: MaterialStateProperty.all(topIconsBackgroundColor),
+      );
 
   Color get topIconsColor => widget.topIconsColor ?? Colors.white;
 
@@ -139,124 +165,138 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> {
 
   Widget get iconClose =>
       widget.iconClose ??
-          Icon(
-            Icons.close,
-            color: topIconsColor,
-          );
+      Icon(
+        Icons.close,
+        color: topIconsColor,
+      );
 
   Widget get iconFlashOn =>
       widget.flashIconOn ??
-          Icon(
-            Icons.flash_on,
-            color: topIconsColor,
-          );
+      Icon(
+        Icons.flash_on,
+        color: topIconsColor,
+      );
 
   Widget get iconFlashOff =>
       widget.flashIconOff ??
-          Icon(
-            Icons.flash_off,
-            color: topIconsColor,
-          );
+      Icon(
+        Icons.flash_off,
+        color: topIconsColor,
+      );
 
   Widget get rotateCameraIcon =>
       widget.rotateCameraIcon ??
-          Icon(
-            Icons.flip_camera_ios,
-            color: topIconsColor,
-          );
+      Icon(
+        Icons.flip_camera_ios,
+        color: topIconsColor,
+      );
 
   VoidCallback get onPressedClose =>
       widget.onPressedClose ??
-              () {
-            Navigator.pop(context);
-          };
+      () {
+        Navigator.pop(context);
+      };
 
   VoidCallback get onPressedFlash =>
       widget.onPressedFlash ??
-              () {
-            controller.toggleFlashState();
-          };
+      () {
+        controller.toggleFlashState();
+        cameraController.setFlashMode(controller.flashState ? FlashMode.always : FlashMode.off);
+      };
 
   VoidCallback get onPressedRotateCamera =>
       widget.onPressedRotateCamera ??
-              () {
-            // TODO rotate camera
-            // controller.toggleCameraLens();
-          };
+      () async {
+        controller.toggleCamera();
+        cameraController = CameraController(
+          controller.camera,
+          ResolutionPreset.max,
+          enableAudio: false,
+          imageFormatGroup: ImageFormatGroup.jpeg,
+        );
+
+        await cameraController.initialize();
+
+        setState(() {});
+      };
 
   VoidCallback get onPressedTakePicture =>
       widget.onPressedTakePicture ??
-              () {
-            // TODO take picture
-            print("Take picture");
-          };
+      () {
+        // TODO take picture
+        print("Take picture");
+      };
 
   Widget get _buildCloseButton =>
       widget.closeButton ??
-          _buildIcon(
-            onPressed: onPressedClose,
-            icon: iconClose,
-          );
+      _buildIcon(
+        onPressed: onPressedClose,
+        icon: iconClose,
+      );
 
   Widget get _buildFlashButton =>
       widget.flashButton ??
-          _buildIcon(
-            onPressed: onPressedFlash,
-            icon: ValueListenableBuilder(
-              valueListenable: controller.flashStateVN,
-              builder: (context, flashState, _) {
-                return flashState == true ? iconFlashOn : iconFlashOff;
-              },
-            ),
-          );
+      _buildIcon(
+        onPressed: onPressedFlash,
+        icon: ValueListenableBuilder(
+          valueListenable: controller.flashStateVN,
+          builder: (context, flashState, _) {
+            return flashState == true ? iconFlashOn : iconFlashOff;
+          },
+        ),
+      );
 
   Widget get _buildRotateCameraButton =>
       widget.rotateCameraButton ??
-          _buildIcon(
-            onPressed: onPressedRotateCamera,
-            icon: rotateCameraIcon,
-          );
+      _buildIcon(
+        onPressed: onPressedRotateCamera,
+        icon: rotateCameraIcon,
+      );
 
   EdgeInsets get headerPadding =>
       widget.headerPadding ??
-          const EdgeInsets.only(
-            left: 16,
-            right: 16,
-            top: 45,
-          );
+      const EdgeInsets.only(
+        left: 16,
+        right: 16,
+        top: 45,
+      );
 
   Widget get _buildHeader =>
       widget.header ??
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Padding(
-              padding: headerPadding,
-              child: Row(
-                children: [
-                  _buildCloseButton,
-                  const Spacer(),
-                  _buildFlashButton,
-                  const SizedBox(
-                    width: 16,
-                  ),
-                  _buildRotateCameraButton,
-                ],
+      Positioned(
+        top: 0,
+        left: 0,
+        right: 0,
+        child: Padding(
+          padding: headerPadding,
+          child: Row(
+            children: [
+              _buildCloseButton,
+              const Spacer(),
+              _buildFlashButton,
+              const SizedBox(
+                width: 16,
               ),
-            ),
-          );
+              _buildRotateCameraButton,
+            ],
+          ),
+        ),
+      );
 
   Color get circleButtonColor => widget.circleButtonColor ?? const Color(0xFFD9D9D9).withOpacity(0.3);
+
   Color get circleButtonBorderColor => widget.circleButtonBorderColor ?? const Color(0xFFE6E6EA);
 
   double get circleButtonSize => widget.circleButtonSize ?? 72;
+
   double get circleStrokeWidth => widget.circleStrokeWidth ?? 3;
+
   double get circleRadius => widget.circleRadius ?? 36;
 
   EdgeInsets get circleButtonPadding => widget.circleButtonPadding ?? const EdgeInsets.only(bottom: 47.0);
 
-  Widget get _buildElipsedBottomButton => widget.circleButtonTakePicture ??
+  Widget get _buildElipsedBottomButton =>
+      widget.circleButtonTakePicture ??
       Positioned(
         right: 0,
         left: 0,
@@ -291,6 +331,27 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> {
         ),
       );
 
+  Widget _buildLoadingWidget() => widget.loadingWidgetBuilder != null
+      ? widget.loadingWidgetBuilder!()
+      : const Center(
+          child: CircularProgressIndicator(),
+        );
+
+  Widget cameraWidget(context) {
+    var camera = cameraController.value;
+    final size = MediaQuery.of(context).size;
+    var scale = size.aspectRatio * camera.aspectRatio;
+
+    if (scale < 1) scale = 1 / scale;
+
+    return Transform.scale(
+      scale: scale,
+      child: Center(
+        child: CameraPreview(cameraController),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -299,25 +360,35 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Container(
-              // TODO camera
-              color: Colors.black,
-            ),
+    return FutureBuilder(
+      future: Future.wait([
+        controller.init(),
+        cameraController.initialize(),
+      ]),
+      builder: (context, snapshot) {
+        if (snapshot.hasData == false) {
+          return _buildLoadingWidget();
+        }
+
+        return Scaffold(
+          body: Stack(
+            children: [
+              Positioned.fill(
+                child: cameraWidget(context),
+              ),
+              _buildHeader,
+              _buildElipsedBottomButton,
+            ],
           ),
-          _buildHeader,
-          _buildElipsedBottomButton,
-        ],
-      ),
+        );
+      },
     );
   }
 
   @override
   void dispose() {
     controller.dispose();
+    cameraController.dispose();
     super.dispose();
   }
 }
