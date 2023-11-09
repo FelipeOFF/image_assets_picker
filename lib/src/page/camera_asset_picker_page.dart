@@ -292,6 +292,12 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> {
       );
 
   @override
+  void initState() {
+    super.initState();
+    controller.init();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(

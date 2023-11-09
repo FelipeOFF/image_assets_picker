@@ -1,4 +1,9 @@
 # This is a generated file; do not edit or check into version control.
+camera=/Users/felipeoliveira/.pub-cache/hosted/pub.dev/camera-0.10.5+5/
+camera_android=/Users/felipeoliveira/.pub-cache/hosted/pub.dev/camera_android-0.10.8+13/
+camera_avfoundation=/Users/felipeoliveira/.pub-cache/hosted/pub.dev/camera_avfoundation-0.9.13+7/
+camera_web=/Users/felipeoliveira/.pub-cache/hosted/pub.dev/camera_web-0.3.2+3/
+flutter_plugin_android_lifecycle=/Users/felipeoliveira/.pub-cache/hosted/pub.dev/flutter_plugin_android_lifecycle-2.0.17/
 insta_assets_crop=/Users/felipeoliveira/.pub-cache/git/image_crop-a3b1ede57b3661fd938e6deee89b40515418f6c4/
 path_provider=/Users/felipeoliveira/.pub-cache/hosted/pub.dev/path_provider-2.1.1/
 path_provider_android=/Users/felipeoliveira/.pub-cache/hosted/pub.dev/path_provider_android-2.2.1/
