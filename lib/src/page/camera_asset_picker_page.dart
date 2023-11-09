@@ -75,6 +75,40 @@ class CameraAssetPickerPage extends StatefulWidget {
 
   // Camera
 
+  // Flash
+
+  final Color? flashColor;
+
+  // Flash
+
+  // Shape Header
+
+  final Color? shapeHeaderColor;
+  final double? shapeHeaderHeight;
+
+  // Shape Header
+
+  // Shape Bottom
+
+  final Color? shapeBottomColor;
+  final double? shapeBottomHeight;
+
+  // Shape Bottom
+
+  // Bottom Buttons
+
+  final Widget Function(AnimationController)? bottomButtonsBuilder;
+  final EdgeInsets? bottomButtonsPadding;
+
+  // Bottom Buttons
+
+  // Retake Button
+
+  final String? retakeButtonText;
+  final Color? retakeButtonColor;
+
+  // Retake Button
+
   const CameraAssetPickerPage({
     super.key,
     this.header,
@@ -109,6 +143,15 @@ class CameraAssetPickerPage extends StatefulWidget {
     this.cameraController,
     this.loadingWidgetBuilder,
     this.cameraWidgetBuilder,
+    this.flashColor,
+    this.shapeHeaderColor,
+    this.shapeHeaderHeight,
+    this.shapeBottomColor,
+    this.shapeBottomHeight,
+    this.bottomButtonsBuilder,
+    this.bottomButtonsPadding,
+    this.retakeButtonText,
+    this.retakeButtonColor,
   });
 
   @override
@@ -396,6 +439,8 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
 
   Widget get cameraWidget => widget.cameraWidgetBuilder != null ? widget.cameraWidgetBuilder!() : _buildCameraWidget();
 
+  Color get flashColor => widget.flashColor ?? Colors.white;
+
   Widget get animatedFlash => AnimatedBuilder(
         animation: _animationFlashController,
         builder: (context, child) {
@@ -408,15 +453,19 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
           );
         },
         child: Container(
-          color: Colors.white,
+          color: flashColor,
         ),
       );
+
+  Color get shapeHeaderColor => widget.shapeHeaderColor ?? const Color(0xFF160F29);
+
+  double get shapeHeaderHeight => widget.shapeHeaderHeight ?? 77;
 
   Widget get headerCoverAnimation => Positioned(
         top: 0,
         left: 0,
         right: 0,
-        height: 77,
+        height: shapeHeaderHeight,
         child: AnimatedBuilder(
           animation: _animationTransitionViewController,
           builder: (context, child) {
@@ -430,7 +479,77 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
           },
           child: Container(
             // TODO add buttons
-            color: const Color(0xFF160F29),
+            color: shapeHeaderColor,
+          ),
+        ),
+      );
+
+  Color get shapeBottomColor => widget.shapeBottomColor ?? const Color(0xFF160F29);
+
+  double get shapeBottomHeight => widget.shapeBottomHeight ?? 106;
+
+  EdgeInsets get bottomButtonsPadding =>
+      widget.bottomButtonsPadding ??
+      const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 8,
+      );
+
+  String get retakeButtonText => widget.retakeButtonText ?? "Retake";
+
+  Color get retakeButtonColor => widget.retakeButtonColor ?? const Color(0xFFE6E6EA);
+
+  Widget get _buildBottomButtons => Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildButton(
+            retakeButtonText,
+            retakeButtonColor,
+            onPressed: () {
+              _animationTransitionViewController.reverse();
+            },
+          ),
+        ],
+      );
+
+  TextButton _buildButton(String buttonText, Color buttonColor, {VoidCallback? onPressed}) {
+    return TextButton(
+      onPressed: onPressed,
+      style: ButtonStyle(
+        padding: MaterialStateProperty.all(
+          bottomButtonsPadding,
+        ),
+      ),
+      child: Text(
+        buttonText,
+        style: TextStyle(
+          color: buttonColor,
+        ),
+      ),
+    );
+  }
+
+  Widget get bottomCoverAnimation => Positioned(
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: shapeBottomHeight,
+        child: AnimatedBuilder(
+          animation: _animationTransitionViewController,
+          builder: (context, child) {
+            return IgnorePointer(
+              ignoring: _animationTransitionViewControllerValue == 0,
+              child: Opacity(
+                opacity: _animationTransitionViewControllerValue,
+                child: child,
+              ),
+            );
+          },
+          child: Container(
+            color: shapeBottomColor,
+            child: widget.bottomButtonsBuilder != null
+                ? widget.bottomButtonsBuilder!(_animationTransitionViewController)
+                : _buildBottomButtons,
           ),
         ),
       );
@@ -459,6 +578,7 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
               cameraWidget,
               animatedFlash,
               headerCoverAnimation,
+              bottomCoverAnimation,
               _buildHeader,
               _buildElipsedBottomButton,
             ],
@@ -472,7 +592,7 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
     await _animationFlashController.forward();
     await _animationFlashController.reverse();
     await _animationTransitionViewController.forward();
-    await _animationTransitionViewController.reverse(); // TODO remove it
+    // await _animationTransitionViewController.reverse(); // TODO remove it
     // await cameraController.pausePreview();
     // final image = await cameraController.takePicture();
     // TODO handle image
