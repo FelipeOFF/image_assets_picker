@@ -126,6 +126,10 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
     duration: const Duration(milliseconds: 300),
   );
 
+  double get _animationFlashControllerValue => _animationFlashController.value;
+
+  double get _animationTransitionViewControllerValue => _animationTransitionViewController.value;
+
   late final CameraAssetPickerController controller = widget.controller ?? CameraAssetPickerController();
   late CameraController cameraController = widget.cameraController ??
       CameraController(
@@ -237,15 +241,7 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
         setState(() {});
       };
 
-  VoidCallback get onPressedTakePicture =>
-      widget.onPressedTakePicture ??
-      () async {
-        await _animationFlashController.forward();
-        await _animationFlashController.reverse();
-        // await cameraController.pausePreview();
-        // final image = await cameraController.takePicture();
-        // TODO handle image
-      };
+  VoidCallback get onPressedTakePicture => widget.onPressedTakePicture ?? _takePicture;
 
   Widget get _buildCloseButton =>
       widget.closeButton ??
@@ -287,18 +283,30 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
         top: 0,
         left: 0,
         right: 0,
-        child: Padding(
-          padding: headerPadding,
-          child: Row(
-            children: [
-              _buildCloseButton,
-              const Spacer(),
-              _buildFlashButton,
-              const SizedBox(
-                width: 16,
+        child: AnimatedBuilder(
+          animation: _animationTransitionViewController,
+          builder: (context, child) {
+            return IgnorePointer(
+              ignoring: _animationTransitionViewControllerValue == 1,
+              child: Opacity(
+                opacity: 1.0 - _animationTransitionViewControllerValue,
+                child: child,
               ),
-              _buildRotateCameraButton,
-            ],
+            );
+          },
+          child: Padding(
+            padding: headerPadding,
+            child: Row(
+              children: [
+                _buildCloseButton,
+                const Spacer(),
+                _buildFlashButton,
+                const SizedBox(
+                  width: 16,
+                ),
+                _buildRotateCameraButton,
+              ],
+            ),
           ),
         ),
       );
@@ -321,27 +329,39 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
         right: 0,
         left: 0,
         bottom: 0,
-        child: Padding(
-          padding: circleButtonPadding,
-          child: Center(
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: onPressedTakePicture,
-                borderRadius: BorderRadius.circular(circleRadius),
-                splashColor: Colors.white.withOpacity(0.3),
-                hoverColor: Colors.white.withOpacity(0.3),
-                focusColor: Colors.white.withOpacity(0.3),
-                highlightColor: Colors.white.withOpacity(0.3),
-                child: Container(
-                  width: circleButtonSize,
-                  height: circleButtonSize,
-                  decoration: BoxDecoration(
-                    color: circleButtonColor,
-                    borderRadius: BorderRadius.circular(circleRadius),
-                    border: Border.all(
-                      color: circleButtonBorderColor,
-                      width: circleStrokeWidth,
+        child: AnimatedBuilder(
+          animation: _animationTransitionViewController,
+          builder: (context, child) {
+            return IgnorePointer(
+              ignoring: _animationTransitionViewControllerValue == 1,
+              child: Opacity(
+                opacity: 1.0 - _animationTransitionViewControllerValue,
+                child: child,
+              ),
+            );
+          },
+          child: Padding(
+            padding: circleButtonPadding,
+            child: Center(
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: onPressedTakePicture,
+                  borderRadius: BorderRadius.circular(circleRadius),
+                  splashColor: Colors.white.withOpacity(0.3),
+                  hoverColor: Colors.white.withOpacity(0.3),
+                  focusColor: Colors.white.withOpacity(0.3),
+                  highlightColor: Colors.white.withOpacity(0.3),
+                  child: Container(
+                    width: circleButtonSize,
+                    height: circleButtonSize,
+                    decoration: BoxDecoration(
+                      color: circleButtonColor,
+                      borderRadius: BorderRadius.circular(circleRadius),
+                      border: Border.all(
+                        color: circleButtonBorderColor,
+                        width: circleStrokeWidth,
+                      ),
                     ),
                   ),
                 ),
@@ -380,15 +400,38 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
         animation: _animationFlashController,
         builder: (context, child) {
           return IgnorePointer(
-            ignoring: _animationFlashController.value == 0,
+            ignoring: _animationFlashControllerValue == 0,
             child: Opacity(
-              opacity: _animationFlashController.value,
+              opacity: _animationFlashControllerValue,
               child: child,
             ),
           );
         },
         child: Container(
           color: Colors.white,
+        ),
+      );
+
+  Widget get headerCoverAnimation => Positioned(
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 77,
+        child: AnimatedBuilder(
+          animation: _animationTransitionViewController,
+          builder: (context, child) {
+            return IgnorePointer(
+              ignoring: _animationTransitionViewControllerValue == 0,
+              child: Opacity(
+                opacity: _animationTransitionViewControllerValue,
+                child: child,
+              ),
+            );
+          },
+          child: Container(
+            // TODO add buttons
+            color: const Color(0xFF160F29),
+          ),
         ),
       );
 
@@ -415,6 +458,7 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
             children: [
               cameraWidget,
               animatedFlash,
+              headerCoverAnimation,
               _buildHeader,
               _buildElipsedBottomButton,
             ],
@@ -422,6 +466,16 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
         );
       },
     );
+  }
+
+  Future<void> _takePicture() async {
+    await _animationFlashController.forward();
+    await _animationFlashController.reverse();
+    await _animationTransitionViewController.forward();
+    await _animationTransitionViewController.reverse(); // TODO remove it
+    // await cameraController.pausePreview();
+    // final image = await cameraController.takePicture();
+    // TODO handle image
   }
 
   @override
