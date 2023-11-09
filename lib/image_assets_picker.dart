@@ -19,3 +19,4 @@ export 'package:image_assets_picker/src/component/grid_viewer.dart';
 // Page
 export 'package:image_assets_picker/src/page/recents_assets_page.dart';
 export 'package:image_assets_picker/src/page/image_assets_page.dart';
+export 'package:image_assets_picker/src/page/camera_asset_picker_page.dart';

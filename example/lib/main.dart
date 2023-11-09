@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_assets_picker/image_assets_picker.dart';
 
@@ -36,20 +35,14 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text("Image Assets Picker demo"),
-      ),
-      body: ImageAssetsPage(
-        onActionPressed: (Stream<InstaAssetsExportDetails> asset) async {
-          await for (final InstaAssetsExportDetails asset in asset) {
-            if (kDebugMode) {
-              print(asset);
-            }
-          }
-        }
-      ),
-    );
+    return CameraAssetPickerPage(
+        // onActionPressed: (Stream<InstaAssetsExportDetails> asset) async {
+        //   await for (final InstaAssetsExportDetails asset in asset) {
+        //     if (kDebugMode) {
+        //       print(asset);
+        //     }
+        //   }
+        // }
+        );
   }
 }

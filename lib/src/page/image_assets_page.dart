@@ -7,7 +7,7 @@ import 'package:image_assets_picker/src/page/recents_assets_page.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
-const _kInitializeDelayDuration = Duration(milliseconds: 250);
+const kInitializeDelayDuration = Duration(milliseconds: 250);
 
 typedef OnPermissionDenied = void Function(BuildContext context, String errorDescription);
 typedef OnActionPressed = Future<void> Function(Stream<InstaAssetsExportDetails> asset);
@@ -107,7 +107,7 @@ class ImageAssetsPage extends StatefulWidget {
     this.sortPathDelegate = SortPathDelegate.common,
     this.filterOptions,
     this.sortPathsByModifiedDate = false,
-    this.initializeDelayDuration = _kInitializeDelayDuration,
+    this.initializeDelayDuration = kInitializeDelayDuration,
     this.onPermissionDenied,
     this.textDelegate,
     this.loadingWidget,
