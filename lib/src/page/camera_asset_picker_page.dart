@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:cropperx/cropperx.dart';
 import 'package:flutter/material.dart';
 import 'package:image_assets_picker/src/component/crop_view.dart';
 import 'package:image_assets_picker/src/controller/camera_asset_picker_controller.dart';
@@ -212,7 +213,7 @@ class CameraAssetPickerPage extends StatefulWidget {
 }
 
 class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with TickerProviderStateMixin {
-  final GlobalKey<CropState> _cropKey = GlobalKey<CropState>();
+  final GlobalKey _cropKey = GlobalKey(debugLabel: 'cropperKey');
 
   late final AnimationController _animationFlashController = AnimationController(
     vsync: this,
@@ -544,9 +545,7 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
   Color get saveButtonColor => widget.saveButtonColor ?? const Color(0xFFE6E6EA);
 
   Future<void> _saveCropFile() async {
-    final scale = _cropKey.currentState?.scale;
-    final area = _cropKey.currentState?.area;
-    await controller.saveCropedFile(scale, area);
+    await controller.saveCropedFile(Cropper.crop(cropperKey: _cropKey));
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Navigator.pop(context, controller.cropedFile);
@@ -656,7 +655,7 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
       _buildIcon(
         icon: buildCropButton,
         onPressed: () {
-          // TODO rotate image
+          controller.rotationTurns = controller.rotationTurns + 1;
         },
       );
 
@@ -763,20 +762,26 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
             );
           },
           child: ValueListenableBuilder(
-            valueListenable: controller.assetVN,
-            builder: (context, asset, _) {
-              if (asset == null) {
-                return _buildLoadingWidget();
-              }
-              return CropView(
-                asset: asset,
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                aspectRatio: 1.0,
-                cropKey: _cropKey,
-                backgroundColor: cropViewBackgroundColor,
+            valueListenable: controller.rotationTurnsVN,
+            builder: (context, rotationTurns, _) {
+              return ValueListenableBuilder(
+                valueListenable: controller.croppedFileVN,
+                builder: (context, asset, _) {
+                  if (asset == null) {
+                    return _buildLoadingWidget();
+                  }
+                  return CropView(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    aspectRatio: 1.0,
+                    cropKey: _cropKey,
+                    image: asset,
+                    rotationTurns: rotationTurns,
+                    backgroundColor: cropViewBackgroundColor,
+                  );
+                },
               );
-            },
+            }
           ),
         ),
       );
