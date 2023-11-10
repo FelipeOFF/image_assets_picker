@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:cropperx/cropperx.dart';
 import 'package:flutter/material.dart';
 import 'package:image_assets_picker/src/component/crop_view.dart';
 import 'package:image_assets_picker/src/controller/camera_asset_picker_controller.dart';
-import 'package:insta_assets_crop/insta_assets_crop.dart';
+
+typedef OnSavePressed = Future<void> Function(File? asset);
 
 class CameraAssetPickerPage extends StatefulWidget {
   final CameraAssetPickerController? controller;
@@ -153,6 +156,12 @@ class CameraAssetPickerPage extends StatefulWidget {
 
   // CropView
 
+  // Event finish crop
+
+  final OnSavePressed? onSavePressed;
+
+  // Event finish crop
+
   const CameraAssetPickerPage({
     super.key,
     this.header,
@@ -205,7 +214,7 @@ class CameraAssetPickerPage extends StatefulWidget {
     this.saveButtonColor,
     this.cropButtonRotate,
     this.cropButtonIcon,
-    this.cropButtonColor, this.cropViewBackgroundColor,
+    this.cropButtonColor, this.cropViewBackgroundColor, this.onSavePressed,
   });
 
   @override
@@ -548,7 +557,11 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
     await controller.saveCropedFile(Cropper.crop(cropperKey: _cropKey));
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Navigator.pop(context, controller.cropedFile);
+      if (widget.onSavePressed != null) {
+        widget.onSavePressed!(controller.cropedFile);
+      } else {
+        Navigator.pop(context, controller.cropedFile);
+      }
     });
   }
 
