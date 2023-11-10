@@ -214,7 +214,9 @@ class CameraAssetPickerPage extends StatefulWidget {
     this.saveButtonColor,
     this.cropButtonRotate,
     this.cropButtonIcon,
-    this.cropButtonColor, this.cropViewBackgroundColor, this.onSavePressed,
+    this.cropButtonColor,
+    this.cropViewBackgroundColor,
+    this.onSavePressed,
   });
 
   @override
@@ -245,15 +247,23 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
 
   double get _animationTransitionHeaderButtonControllerValue => _animationTransitionHeaderButtonController.value;
 
-  late final CameraAssetPickerController controller = widget.controller ?? CameraAssetPickerController();
-  late CameraController cameraController = widget.cameraController ??
-      CameraController(
+  CameraAssetPickerController? _controller;
+  CameraAssetPickerController get controller {
+    _controller ??= widget.controller ?? CameraAssetPickerController();
+    return _controller!;
+  }
+
+  CameraController get _initializeCameraController => CameraController(
         controller.camera,
         ResolutionPreset.max,
         enableAudio: false,
         imageFormatGroup: ImageFormatGroup.jpeg,
-      )
-    ..setFlashMode(controller.flashState ? FlashMode.always : FlashMode.off);
+      )..setFlashMode(controller.flashState ? FlashMode.always : FlashMode.off);
+  CameraController? _cameraController;
+  CameraController get cameraController {
+    _cameraController ??= _initializeCameraController;
+    return _cameraController!;
+  }
 
   double get topIconsSplashRadius => widget.topIconsSplashRadius ?? 12;
 
@@ -344,7 +354,7 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
       widget.onPressedRotateCamera ??
       () async {
         controller.toggleCamera();
-        cameraController = CameraController(
+        _cameraController = CameraController(
           controller.camera,
           ResolutionPreset.max,
           enableAudio: false,
@@ -581,20 +591,34 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
           valueListenable: controller.isLoadingCroppedFileVN,
           builder: (context, isLoading, child) {
             if (isLoading || child == null) {
-              return const SizedBox(
-                width: 24,
-                height: 24,
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
+              return Center(
+                child: _buildLoadingWidget(),
               );
             }
             return child;
           },
-          child: _buildButton(
-            saveButtonText,
-            saveButtonColor,
-            onPressed: _saveCropFile,
+          child: ValueListenableBuilder(
+            valueListenable: controller.isLoadingCroppedFileVN,
+            builder: (context, isLoading, child) {
+              if (isLoading || child == null) {
+                return const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                );
+              }
+              return child;
+            },
+            child: _buildButton(
+              saveButtonText,
+              saveButtonColor,
+              onPressed: _saveCropFile,
+            ),
           ),
         ),
       ],
@@ -775,27 +799,26 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
             );
           },
           child: ValueListenableBuilder(
-            valueListenable: controller.rotationTurnsVN,
-            builder: (context, rotationTurns, _) {
-              return ValueListenableBuilder(
-                valueListenable: controller.croppedFileVN,
-                builder: (context, asset, _) {
-                  if (asset == null) {
-                    return _buildLoadingWidget();
-                  }
-                  return CropView(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    aspectRatio: 1.0,
-                    cropKey: _cropKey,
-                    image: asset,
-                    rotationTurns: rotationTurns,
-                    backgroundColor: cropViewBackgroundColor,
-                  );
-                },
-              );
-            }
-          ),
+              valueListenable: controller.rotationTurnsVN,
+              builder: (context, rotationTurns, _) {
+                return ValueListenableBuilder(
+                  valueListenable: controller.croppedFileVN,
+                  builder: (context, asset, _) {
+                    if (asset == null) {
+                      return _buildLoadingWidget();
+                    }
+                    return CropView(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height,
+                      aspectRatio: 1.0,
+                      cropKey: _cropKey,
+                      image: asset,
+                      rotationTurns: rotationTurns,
+                      backgroundColor: cropViewBackgroundColor,
+                    );
+                  },
+                );
+              }),
         ),
       );
 
@@ -804,11 +827,18 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
     return FutureBuilder(
       future: Future.sync(() async {
         await controller.init();
-        await cameraController.initialize();
+        if (cameraController.value.isInitialized == false) {
+          await cameraController.initialize();
+        }
         return true;
       }),
       builder: (context, snapshot) {
-        if (snapshot.hasData == false) {
+        if (snapshot.hasError) {
+          Navigator.of(context).pop();
+          return const Center(
+            child: Text("Error"),
+          );
+        } else if (snapshot.hasData == false) {
           return _buildLoadingWidget();
         }
 
@@ -842,8 +872,13 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
 
   @override
   void dispose() {
+    _animationFlashController.dispose();
+    _animationTransitionViewController.dispose();
+    _animationTransitionHeaderButtonController.dispose();
     controller.dispose();
     cameraController.dispose();
+    _cameraController = null;
+    _controller = null;
     super.dispose();
   }
 }

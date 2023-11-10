@@ -12,21 +12,23 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      initialRoute: '/',
+      routes: {
+        '/': (_) => const MyHomePage(),
+        '/camera': (_) => const CameraPage(),
+      },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.blue,
         ),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -35,14 +37,24 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return CameraAssetPickerPage(
-        // onActionPressed: (Stream<InstaAssetsExportDetails> asset) async {
-        //   await for (final InstaAssetsExportDetails asset in asset) {
-        //     if (kDebugMode) {
-        //       print(asset);
-        //     }
-        //   }
-        // }
-        );
+    return Scaffold(
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.pushNamed(context, '/camera');
+          },
+          child: const Text('Open Camera'),
+        ),
+      ),
+    );
+  }
+}
+
+class CameraPage extends StatelessWidget {
+  const CameraPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const CameraAssetPickerPage();
   }
 }

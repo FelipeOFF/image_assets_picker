@@ -5,15 +5,6 @@ import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 
 class CameraAssetPickerController {
-  static CameraAssetPickerController? _instance;
-
-  factory CameraAssetPickerController() {
-    _instance ??= CameraAssetPickerController._internal();
-    return _instance!;
-  }
-
-  CameraAssetPickerController._internal();
-
   final ValueNotifier<bool> flashStateVN = ValueNotifier<bool>(false);
   final ValueNotifier<List<CameraDescription>> camerasVN = ValueNotifier<List<CameraDescription>>([]);
   late final ValueNotifier<CameraDescription> cameraVN = ValueNotifier<CameraDescription>(frontCamera);
@@ -86,12 +77,15 @@ class CameraAssetPickerController {
     try {
       final bytes = await image;
       if (bytes != null) {
-        cropedFile = File.fromRawPath(bytes);
+        cropedFile = await File(generateFileName).writeAsBytes(bytes);
       }
     } finally {
       isLoadingCroppedFile = false;
     }
   }
+
+  String get generateFileName => "$tempDirectory${DateTime.now().millisecondsSinceEpoch}.jpg";
+  String get tempDirectory => Directory.systemTemp.path;
 
   void dispose() {
     flashStateVN.dispose();
