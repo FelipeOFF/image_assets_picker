@@ -31,7 +31,7 @@ class CropView extends StatelessWidget {
       overlayType: OverlayType.circle,
       zoomScale: 1.0,
       overlayColor: backgroundColor ?? Theme.of(context).canvasColor.withOpacity(0.5),
-      image: Image.file(image!),
+      image: Image.file(image),
       rotationTurns: rotationTurns,
     );
   }

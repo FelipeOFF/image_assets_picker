@@ -14,7 +14,7 @@ dependencies:
     git:
       url: https://github.com/FelipeOFF/image_crop.git
       ref: master
-  wechat_assets_picker: ^8.7.1
+  wechat_assets_picker: ^8.8.0
   extended_image: ^8.1.1
   provider: ^6.0.5
   camera: ^0.10.5+5
