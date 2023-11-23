@@ -4,7 +4,7 @@ version: 0.0.1
 publish_to: none
 
 environment:
-  sdk: '>=3.1.0 <4.0.0'
+  sdk: '>=3.2.0 <4.0.0'
   flutter: ">=1.17.0"
 
 dependencies:
@@ -14,7 +14,7 @@ dependencies:
     git:
       url: https://github.com/FelipeOFF/image_crop.git
       ref: master
-  wechat_assets_picker: ^8.8.0
+  wechat_assets_picker: ^8.9.0-dev.1
   extended_image: ^8.1.1
   provider: ^6.0.5
   camera: ^0.10.5+5
