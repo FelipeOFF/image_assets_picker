@@ -597,28 +597,10 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
             }
             return child;
           },
-          child: ValueListenableBuilder(
-            valueListenable: controller.isLoadingCroppedFileVN,
-            builder: (context, isLoading, child) {
-              if (isLoading || child == null) {
-                return const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  ),
-                );
-              }
-              return child;
-            },
-            child: _buildButton(
-              saveButtonText,
-              saveButtonColor,
-              onPressed: _saveCropFile,
-            ),
+          child:_buildButton(
+            saveButtonText,
+            saveButtonColor,
+            onPressed: _saveCropFile,
           ),
         ),
       ],
