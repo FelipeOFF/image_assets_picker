@@ -248,6 +248,7 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
   double get _animationTransitionHeaderButtonControllerValue => _animationTransitionHeaderButtonController.value;
 
   CameraAssetPickerController? _controller;
+
   CameraAssetPickerController get controller {
     _controller ??= widget.controller ?? CameraAssetPickerController();
     return _controller!;
@@ -260,6 +261,7 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
         imageFormatGroup: ImageFormatGroup.jpeg,
       )..setFlashMode(controller.flashState ? FlashMode.always : FlashMode.off);
   CameraController? _cameraController;
+
   CameraController get cameraController {
     _cameraController ??= _initializeCameraController;
     return _cameraController!;
@@ -591,13 +593,21 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
           valueListenable: controller.isLoadingCroppedFileVN,
           builder: (context, isLoading, child) {
             if (isLoading || child == null) {
-              return Center(
-                child: _buildLoadingWidget(),
+              return Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10.0,
+                  vertical: 15.0,
+                ),
+                child: SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: _buildLoadingWidget(),
+                ),
               );
             }
             return child;
           },
-          child:_buildButton(
+          child: _buildButton(
             saveButtonText,
             saveButtonColor,
             onPressed: _saveCropFile,
