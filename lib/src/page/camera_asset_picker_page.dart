@@ -107,6 +107,8 @@ class CameraAssetPickerPage extends StatefulWidget {
 
   final Widget Function(AnimationController)? bottomButtonsBuilder;
   final EdgeInsets? textButtonsPadding;
+  final TextStyle? textButtonsStyle;
+  final ButtonStyle? textButtonsButtonStyle;
 
   // Bottom Buttons
 
@@ -223,6 +225,8 @@ class CameraAssetPickerPage extends StatefulWidget {
     this.onSavePressed,
     this.overlayType,
     this.aspectRatio,
+    this.textButtonsStyle,
+    this.textButtonsButtonStyle,
   });
 
   @override
@@ -743,16 +747,24 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
   TextButton _buildButton(String buttonText, Color buttonColor, {VoidCallback? onPressed}) {
     return TextButton(
       onPressed: onPressed,
-      style: ButtonStyle(
-        padding: MaterialStateProperty.all(
-          bottomButtonsPadding,
-        ),
-      ),
+      style: widget.textButtonsButtonStyle?.copyWith(
+            padding: MaterialStateProperty.all(
+              bottomButtonsPadding,
+            ),
+          ) ??
+          ButtonStyle(
+            padding: MaterialStateProperty.all(
+              bottomButtonsPadding,
+            ),
+          ),
       child: Text(
         buttonText,
-        style: TextStyle(
-          color: buttonColor,
-        ),
+        style: widget.textButtonsStyle?.copyWith(
+              color: buttonColor,
+            ) ??
+            TextStyle(
+              color: buttonColor,
+            ),
       ),
     );
   }
