@@ -58,6 +58,7 @@ class ImageAssetsPage extends StatefulWidget {
   final Widget? iconButtonRecents;
   final VoidCallback? onButtonRecentsPressed;
   final bool isToShowButtonRecents;
+  final double? recentMarginBetweenTextAndIcon;
 
   // End button recents struct
 
@@ -136,6 +137,7 @@ class ImageAssetsPage extends StatefulWidget {
     this.recentScreenBackgroundColor,
     this.selectedFilterColor,
     this.isToShowButtonLoading = false,
+    this.recentMarginBetweenTextAndIcon,
   });
 
   @override
@@ -301,6 +303,8 @@ class _ImageAssetsPageState extends State<ImageAssetsPage> {
 
   Widget get _iconButtonRecents => widget.iconButtonRecents ?? const Icon(Icons.arrow_drop_down, size: 14);
 
+  double get _widthSizeBetweenTextAndIcon => widget.recentMarginBetweenTextAndIcon ?? 8;
+
   TextStyle get _buttonRecentsTextStyle =>
       widget.buttonRecentsTextStyle ??
       const TextStyle(
@@ -313,9 +317,6 @@ class _ImageAssetsPageState extends State<ImageAssetsPage> {
         style: _buttonRecentsStyle,
         child: Row(
           children: [
-            const SizedBox(
-              width: 8,
-            ),
             Selector<DefaultAssetPickerProvider, PathWrapper<AssetPathEntity>?>(
               selector: (_, DefaultAssetPickerProvider p) => p.currentPath,
               builder: (context, currentWrapper, _) {
@@ -324,6 +325,9 @@ class _ImageAssetsPageState extends State<ImageAssetsPage> {
                   style: _buttonRecentsTextStyle,
                 );
               },
+            ),
+            SizedBox(
+              width: _widthSizeBetweenTextAndIcon,
             ),
             _iconButtonRecents,
           ],
