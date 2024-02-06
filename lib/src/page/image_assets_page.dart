@@ -18,6 +18,7 @@ class ImageAssetsPage extends StatefulWidget {
   // App bar struct
   final PreferredSizeWidget? appBar;
   final String? title;
+  final TextStyle? titleTextStyle;
   final Color? appBarBackgroundColor;
   final Widget? leading;
   final String? leadingText;
@@ -137,7 +138,7 @@ class ImageAssetsPage extends StatefulWidget {
     this.recentScreenBackgroundColor,
     this.selectedFilterColor,
     this.isToShowButtonLoading = false,
-    this.recentMarginBetweenTextAndIcon,
+    this.recentMarginBetweenTextAndIcon, this.titleTextStyle,
   });
 
   @override
@@ -239,7 +240,10 @@ class _ImageAssetsPageState extends State<ImageAssetsPage> {
           leadingWidth: 81,
           backgroundColor: _appBarBackgroundColor,
           title: Center(
-            child: Text(_title),
+            child: Text(
+              _title,
+              style: widget.titleTextStyle,
+            ),
           ),
         );
   }
