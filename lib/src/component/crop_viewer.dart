@@ -1,6 +1,7 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_assets_picker/src/controller/image_assets_controller.dart';
+import 'package:image_assets_picker/src/model/crop_shape_overlay.dart';
 import 'package:image_assets_picker/src/util/constants.dart';
 import 'package:image_assets_picker/src/util/list_ext.dart';
 import 'package:insta_assets_crop/insta_assets_crop.dart';
@@ -18,6 +19,7 @@ class CropViewer extends StatefulWidget {
   final String loadFailedText;
   final ValueChanged<AssetEntity>? unSelectAsset;
   final Color? backgroundColor;
+  final CropShapeOverlay? overlayType;
 
   const CropViewer({
     super.key,
@@ -31,6 +33,7 @@ class CropViewer extends StatefulWidget {
     this.loaderWidget,
     this.unSelectAsset,
     this.backgroundColor,
+    this.overlayType,
   });
 
   @override
@@ -121,6 +124,9 @@ class CropViewerState extends State<CropViewer> {
                             key: _cropKey,
                             isToDrawGrid: false,
                             isToApplyBackgroundOpacity: false,
+                            // if the image could not be loaded (i.e unsupported format like RAW)
+                            // unselect it and clear cache, also show the error widget
+                            isToDrawRectGrid: widget.overlayType == CropShapeOverlay.rectangle,
                             image: AssetEntityImageProvider(asset!, isOriginal: true),
                             placeholderWidget: ValueListenableBuilder<bool>(
                               valueListenable: controller.isLoadingErrorVM,
@@ -151,9 +157,6 @@ class CropViewerState extends State<CropViewer> {
                                 );
                               },
                             ),
-                            // if the image could not be loaded (i.e unsupported format like RAW)
-                            // unselect it and clear cache, also show the error widget
-                            isToDrawRectGrid: false,
                             onImageError: (exception, stackTrace) {
                               widget.unSelectAsset?.call(asset);
                               AssetEntityImageProvider(asset).evict();

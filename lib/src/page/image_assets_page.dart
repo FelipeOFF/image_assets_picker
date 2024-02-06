@@ -3,6 +3,7 @@ import 'package:image_assets_picker/src/component/crop_viewer.dart';
 import 'package:image_assets_picker/src/component/grid_viewer.dart';
 import 'package:image_assets_picker/src/controller/image_assets_controller.dart';
 import 'package:image_assets_picker/src/model/assets_export_details.dart';
+import 'package:image_assets_picker/src/model/crop_shape_overlay.dart';
 import 'package:image_assets_picker/src/page/recents_assets_page.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
@@ -47,6 +48,8 @@ class ImageAssetsPage extends StatefulWidget {
   final OnPermissionDenied? onPermissionDenied;
   final AssetPickerTextDelegate? textDelegate;
   final Widget? loadingWidget;
+  final CropShapeOverlay? overlayType;
+  final double? aspectRatio;
 
   // End crop viewer struct
 
@@ -138,7 +141,10 @@ class ImageAssetsPage extends StatefulWidget {
     this.recentScreenBackgroundColor,
     this.selectedFilterColor,
     this.isToShowButtonLoading = false,
-    this.recentMarginBetweenTextAndIcon, this.titleTextStyle,
+    this.recentMarginBetweenTextAndIcon,
+    this.titleTextStyle,
+    this.overlayType,
+    this.aspectRatio,
   });
 
   @override
@@ -396,6 +402,7 @@ class _ImageAssetsPageState extends State<ImageAssetsPage> {
                   key: formKey,
                   loadingWidget: loadingWidget,
                   controller: controller,
+                  overlayType: widget.overlayType,
                 ),
                 widget.isToShowButtonRecents
                     ? Row(
