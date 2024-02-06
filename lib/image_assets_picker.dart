@@ -1,16 +1,9 @@
 library image_assets_picker;
 
-// export 'package:wechat_assets_picker/wechat_assets_picker.dart'
-//     show
-//     AssetEntity,
-//     AssetEntityImageProvider,
-//     DefaultAssetPickerProvider,
-//     SpecialItemPosition,
-//     PhotoManager;
-
 // Model
 export 'package:image_assets_picker/src/model/assets_crop_data.dart';
 export 'package:image_assets_picker/src/model/assets_export_details.dart';
+export 'package:image_assets_picker/src/model/crop_shape_overlay.dart';
 
 // Components
 export 'package:image_assets_picker/src/component/crop_viewer.dart';

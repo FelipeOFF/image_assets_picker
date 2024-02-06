@@ -1,0 +1,4 @@
+enum CropShapeOverlay {
+  circle,
+  rectangle,
+}

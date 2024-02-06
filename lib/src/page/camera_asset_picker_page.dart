@@ -5,6 +5,8 @@ import 'package:cropperx/cropperx.dart';
 import 'package:flutter/material.dart';
 import 'package:image_assets_picker/src/component/crop_view.dart';
 import 'package:image_assets_picker/src/controller/camera_asset_picker_controller.dart';
+import 'package:image_assets_picker/src/helper/overlay_type_ext.dart';
+import 'package:image_assets_picker/src/model/crop_shape_overlay.dart';
 
 typedef OnSavePressed = Future<void> Function(File? asset);
 
@@ -153,6 +155,8 @@ class CameraAssetPickerPage extends StatefulWidget {
   // CropView
 
   final Color? cropViewBackgroundColor;
+  final CropShapeOverlay? overlayType;
+  final double? aspectRatio;
 
   // CropView
 
@@ -217,6 +221,8 @@ class CameraAssetPickerPage extends StatefulWidget {
     this.cropButtonColor,
     this.cropViewBackgroundColor,
     this.onSavePressed,
+    this.overlayType,
+    this.aspectRatio,
   });
 
   @override
@@ -800,11 +806,10 @@ class _CameraAssetPickerPageState extends State<CameraAssetPickerPage> with Tick
                       return _buildLoadingWidget();
                     }
                     return CropView(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height,
-                      aspectRatio: 1.0,
+                      aspectRatio: widget.aspectRatio ?? 1.0,
                       cropKey: _cropKey,
                       image: asset,
+                      overlayType: widget.overlayType?.overlayType ?? OverlayType.circle,
                       rotationTurns: rotationTurns,
                       backgroundColor: cropViewBackgroundColor,
                     );

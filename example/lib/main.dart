@@ -55,6 +55,9 @@ class CameraPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CameraAssetPickerPage();
+    return const CameraAssetPickerPage(
+      overlayType: CropShapeOverlay.rectangle,
+      aspectRatio: 16/10,
+    );
   }
 }
